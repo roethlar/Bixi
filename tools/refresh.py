@@ -73,13 +73,30 @@ import tempfile
 from pathlib import Path
 
 CANONICAL_URLS = [
-    # Order matters: GitHub is canon and is tried first whenever reachable;
-    # the LAN gitea mirror is only a fallback when GitHub does not respond.
-    # (Mirror-first would fast-forward to a lagging mirror head and silently
-    # run a stale toolkit.) Offline -> proceed on the local copy with a flag.
+    # Order matters: the clone's own origin is tried first (a product clone
+    # syncs from its product home, the dev clone from its home); the public
+    # product repo is the canonical fallback, then the dev remote and the
+    # LAN gitea mirror. (Mirror-first would fast-forward to a lagging mirror
+    # head and silently run a stale toolkit.) Offline -> proceed on the
+    # local copy with a flag.
+    "https://github.com/roethlar/Bixi.git",
     "https://github.com/roethlar/AgentGovernanceBootstrap.git",
     "http://q:3000/michael/AgentGovernanceBootstrap.git",
 ]
+
+
+def sync_urls(toolkit: Path) -> "list[str]":
+    """Sync candidates for the toolkit clone: its own origin first, then the
+    canonical list (deduped, order preserved). The clone's origin is how a
+    product clone finds its product home (2026-07-24 packaging)."""
+    urls = []
+    origin = git(toolkit, "remote", "get-url", "origin", check=False)
+    if origin.returncode == 0 and origin.stdout.strip():
+        urls.append(origin.stdout.strip())
+    for url in CANONICAL_URLS:
+        if url not in urls:
+            urls.append(url)
+    return urls
 
 ADAPTER_DIRS = (".claude", ".codex", ".gemini", ".grok")
 
@@ -143,7 +160,7 @@ def worktree_root_error(path: Path) -> "str | None":
 def sync_toolkit(toolkit: Path) -> str:
     """Fast-forward the toolkit clone from a canonical remote. Never blocks:
     offline or diverged -> proceed on the local copy, returning a flag note."""
-    for url in CANONICAL_URLS:
+    for url in sync_urls(toolkit):
         live = git(toolkit, "ls-remote", "--exit-code", url, "HEAD", check=False)
         if live.returncode != 0:
             continue
