@@ -989,6 +989,9 @@ def main(argv=None) -> int:
     ap.add_argument("--no-remediate", action="store_true",
                     help="never launch a live remediation session for lint findings; "
                          "print them instead (CI and automated runs)")
+    ap.add_argument("--lint-only", action="store_true",
+                    help="read-only: print hygiene findings and exit (0 clean, "
+                         "6 findings present); no sync, reconcile, commit, or offers")
     args = ap.parse_args(argv)
 
     if args.plan_json and args.apply:
@@ -1010,6 +1013,19 @@ def main(argv=None) -> int:
     if err:
         print("refresh: {} is {}".format(target, err), file=sys.stderr)
         return 2
+    if args.lint_only:
+        # Read-only verification (2026-07-24): print hygiene findings and
+        # exit — no sync, no reconcile, no commit, no offers. Exit 6 when
+        # judgment findings are present so a session can branch on it.
+        warns = 0
+        for rel, msg, kind in lint_governance(target):
+            print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, msg))
+            warns += (kind != "note")
+        if warns:
+            print("refresh: {} hygiene finding(s) need judgment.".format(warns))
+            return 6
+        print("refresh: hygiene clean.")
+        return 0
     if not (toolkit / "tools" / "shipped-set.json").exists():
         print("refresh: {} does not look like the toolkit (no tools/shipped-set.json)".format(toolkit), file=sys.stderr)
         return 2

@@ -19,8 +19,12 @@ For each finding, one at a time, present in plain English:
    archive the closed decision, or something else you see. One
    recommendation with its reason.
 4. **Ask how to remediate it.** Apply exactly what the owner rules —
-   "yes", "no", "do the other thing", "leave it". A ruling you do not
-   understand gets one clarifying question, not a guess.
+   "yes", "no", "do the other thing". A ruling you do not understand gets
+   one clarifying question, not a guess. **A "leave it" ruling is never
+   left bare**: record it on that same line as
+   `<!-- lint: allow (owner ruled leave-it, <date>: <one-line reason>) -->`
+   — otherwise the finding re-flags on every future run and re-offers a
+   session forever. The marker is the durable record of the decision.
 
 Never batch the findings. Never fix ahead of a ruling.
 
@@ -38,8 +42,9 @@ Never batch the findings. Never fix ahead of a ruling.
 
 ## When every finding has a ruling
 
-1. Apply the rulings. Verify each fix holds (the reference resolves, the
-   entry moved, the marker is on the same line).
+1. Apply the rulings. Verify with the lint alone —
+   `refresh.py --lint-only` (read-only; exit 6 while findings remain):
+   never re-run a full refresh just to verify.
 2. Ask the owner before committing: propose ONE scoped commit of exactly
    the files you changed (never `-A`, never `-f`) with the message
    `governance remediation: <one-line summary>`, and push per the repo's
