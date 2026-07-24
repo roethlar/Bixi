@@ -1,0 +1,27 @@
+#!/bin/sh
+# publish — owner-facing launcher. Finds a working Python >=3.10 and execs
+# tools/publish.py with it. Same contract as tools/new-project.
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+found=""
+for cand in python3.14 python3.13 python3.12 python3.11 python3.10 python3 \
+            /opt/homebrew/bin/python3.14 /opt/homebrew/bin/python3.13 \
+            /opt/homebrew/bin/python3.12 /opt/homebrew/bin/python3.11 \
+            /opt/homebrew/bin/python3.10; do
+    bin=$(command -v "$cand" 2>/dev/null) || continue
+    ver=$("$bin" -c 'import sys; print("%d %d" % sys.version_info[:2])' 2>/dev/null) || continue
+    maj=${ver%% *}
+    min=${ver##* }
+    if [ "$maj" = "3" ] && [ "$min" -ge 10 ] 2>/dev/null; then
+        found="$bin"
+        break
+    fi
+done
+
+if [ -z "$found" ]; then
+    echo "publish: no working Python 3.10 or newer was found." >&2
+    echo "Install one (on macOS: brew install python@3.13) and run this again." >&2
+    exit 1
+fi
+
+exec "$found" "$here/publish.py" "$@"

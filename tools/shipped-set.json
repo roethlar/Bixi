@@ -1,0 +1,514 @@
+{
+ "schema": 1,
+ "comment": "The toolkit's shipped artifact set. tools/refresh.py reconciles a governed repo to exactly this set; installed governance is toolkit-owned (owner ruling 2026-07-16), so divergence is always drift and every run converges the repo. Classes: replace-whole (AGENTS.md: current or formerly-shipped versions update normally; divergent content is restored to current when git history shows a committed version once matched a shipped hash, and flagged as a foreign governance file - bootstrap, not refresh - when none ever did); replace (missing = install; matches a formerly-shipped version = update to current; anything else = drift, reported with its introducing commits and restored to current); retired (formerly-shipped target paths removed; drifted content is removed with a report - git history preserves it, and the dirty-tree refusal keeps uncommitted content from being machine-destroyed). All matching is newline-equivalent sha256: CRLF -> LF, and content differing only by at most one trailing final newline matches (issue #1). formerly[] lists normalized hashes of every version ever shipped, from git history. MAINTENANCE RULE: whenever a shipped source file changes, append the OUTGOING version's normalized hash to its formerly[] in the same commit - otherwise deployed copies of that version get reported as drift and restored instead of cleanly updated.",
+ "artifacts": [
+  {
+   "source": "templates/AGENTS.template.md",
+   "target": "AGENTS.md",
+   "class": "replace-whole",
+   "formerly": [
+    "510cedf000a4a35540f536894d26351842c3a7bee9e561659358afbeabfac5ae",
+    "09526ef29a7081dbc87480e67a8eb6d11253955a355eafd7e126fe5e5230b990",
+    "9c1d9d9c943524d898eeff6f4747ab41b1e8d02349982de660855c2c483fc444",
+    "94a1ebeefa5f7082f7bc62e328d61ceb4c55fc1af7f447daa99b0aa9737ca207",
+    "7caa66b122e4364b46ec30002bad71c1502ffc9316b1f7b1739f88a182cf96cd",
+    "c20f0019640a144e989a7a81b7c5097c9b3712dcceec6aadd605ed014daf8ed1",
+    "994647bcf08a1af5e13cfc4cd0473a1cabc8c395bbd58da706f699b31a525a3c",
+    "31f6867684bd50c2cb6eab28687d2e9a7db147a69aae4b5f7bfb898a4ed670b0",
+    "2b19f30188014876108f8a8244de6194ce8a10bb1d45058082bb40d114f5ab19",
+    "412aa58afafbbdaf727cec7ce0de4ecd3a65ffaee942942bc06ed6488fd9d821",
+    "f5bc0ded202757aaf00f4170d20636b133c8ffadd260775fba0427b502743164",
+    "23aef59e6e37cd350a9b77916d0cc7feeb8b4656b6ac0dbad912c1b41cabfed0",
+    "8aff5079c4fbe3cc3210d1ad749299c16d6138c3c49923ee750005cd3d546174",
+    "21db6a3a9ebdc77be8d2a9b65cbdc2d88615164376ed9fa0e6f4a51ff8fe2447",
+    "995788419308287b13c451f655798138bcd3ca3e972e40d5888f5ef4907e6eb1",
+    "6f786f0a582afbf0d3b8168f7c0d97f51c16e11f33624d02769a135b8aa649c9",
+    "50eda10b73d04e4aabcb128178f725db494d81f97ab8c7d25252337b8116556a",
+    "f9448063ea9dd1f2ba1e572e8e252db230de7bbe632551023dc4b44ba6b07f92",
+    "7d6ebc0f8976a4b865b6556043ff1248f36de0091ed163dd62e62e12b4716bf3",
+    "56501856537b46f5bbb77f6ad51e7e50d5e26efd3d9ea5a7ae3243694ee62d9c",
+    "a961e01cfc288ebf0938b7c5079d8f3e9aeae28b86ba4b19487bde9b96646a0d",
+    "9eacc971ae3e71c6bca7ae40b1567833119b3380c58a1cebc94a95122db03876",
+    "12151277af278067a675a050621508b303d4721e81e0f71ad3174dbacbd61c27",
+    "b787628e0561de022235ad0f2b6409088720b82ccc83cbbb130e89659a084fd2",
+    "4e6b84715c3d382477a66c5eb3239bfdc21ef4b5c131cfebb6f272b1e12fab15",
+    "ccf44dbb421d8faed8461a56e0afb3706fbf9a8bbec3f56f90f8c493fb7648c7",
+    "54db9dec1437f4debfaaec4700bf8ce550d08259039b4d5c719730181783ea9a",
+    "218388dc483b2bc9dc4a838131bfe145222e90ebaeb2a9d6ca8d3b4ecce38d4c",
+    "8fb65de4fab632e57347ac7fbc6a37f244abb5f41ccb66ecf1ffa386576e6f90",
+    "75acdd068aba4589bce190c5a257a408774440cfba2c8cd5199d54f4f06aaab8",
+    "800a965c25ac28a10a165599d4902f2ee93c83eb88a700b63ec2bcee62bb85ae",
+    "9d92de415cf119de29f1eefd86b4adacd5a96356d4557f80088b6540572ecb3b",
+    "478ef09da8ccc213196062988da6c5887ec16763721e4adf1932b76945c5fda5",
+    "c48d648879b29fcae88fa69834a008f74596fb8ff3428d0f7cf861c8d1dc7257",
+    "86966ad6a5aa3c60d042e8fc3c3900dccfa199d4d9ef709995af39811cc871cc",
+    "1161cf284f7122b5fe0cbfae000129c24075ee7cc9ecbc7a2a13868fa30f8c47",
+    "2d4fdaafbf27125eb6ad0715718ce1652550ebf5f456ca37a9e5757e09c03fcb",
+    "1caae805f8427ad477848ed4ee642975f1d9bd0cfc35977fca7ff8182433fdd6",
+    "b27435a2e9e61b92f57c2e9e5339900a6ef8c12c85a5dccb7dfec057563a8cda",
+    "fb41f1f3f4ead4c23a2e71d0ba04e28817243d7524eb310d18cca45aa402ba0b",
+    "9ca6663315a64901364d5b607d48e9ff827e4d907cca280d3262c97a50296ec6",
+    "1d264a8f0dd1446a09eccdefbe3e134577cabf20bf85caf8424f17e2199d630b",
+    "1a1fb5b36145c7c36babdb74f5c10bb7870db778fb2c9c2024494d8b66410fac",
+    "77db17a3a3dd20284d09293998febaac37142edf173df86fbb3937c13158036c",
+    "8454186b54dc307aeb8216732945232d5d12a2df6213aa88843bb4f989bf258c",
+    "255ecaf2051455bd985ba7cc8872057328baf23fefb7be9218e7bc2dc24c2ee9",
+    "e9a62c4ece32f30482c80c39a22f3cbd99ff89bf0028e05ba3a218a356331e93",
+    "0b315d5f46edc4e5589d85ec728bf6b045a27976c2423d14694c5a3185e24b59",
+    "0dc9885e28273f0cb4b7f6835991025b23af40405d3301e979dc29360c4a69fc",
+    "9d8bb1eac28304dce264a7c9de0c3829b67703deb2ee824aa07b3d7c98afec60",
+    "05faa5e34aad99f905972ff25bb723dd3aaa6c73ce93e12dff8ae3b79ca4d886",
+    "392a08d3544e1f73d48fb7a4f53ee14782c2cac53a40d17e395957d893a06c09",
+    "f11f37ceaa5219470df22c3c797d31ee83673a7776f1af55ab6e1176916189ae",
+    "755d667e6a60fb5925f1dd535e774eb2f1e25b0f37bcd238abbcd0220818cb56",
+    "6da28fe7daff1411afd6c9bc6713c915d7f23dc1adc6e42f23b08793e67e61f1",
+    "36226ff79a99549fb63742152eaf3bd814b03bc9319d1209fbaa45811c9d17a3",
+    "9630dc7332f5e3d74ccd9d3fb35a4b7ba7220708ec60ad44305d95e4e0e4dca8",
+    "0b16e0b5de2dbaf9ad8fcb6ba8d84b806bd0e8ad5a597eb7f1a56bcd4eaaaf5c",
+    "cd28b8fbde3a5bf715788e766ab0441676f276a99021707c01eb2d5f105d97b0",
+    "92a8137ca06d9888e2577829df94127aec31b56e20a864938634fe535c0cad2c",
+    "831faf0f3173ad02a6d8ef8d66a8f850bd775c509a970235fffdb2151efc463c",
+    "126070504b11a2771f70f125c8dbe385d64b716aaf313859acfa28844ab7c6f4",
+    "7890d3cf59caba1a705d1f59868d4eb8b85c61f6f9ccc659daa02c67543cee6c",
+    "6cf8f0a2208840d0066ef19647f0276c4936924fc67c784df8a161eff3b42c1d"
+   ]
+  },
+  {
+   "source": "templates/shims/CLAUDE.template.md",
+   "target": "CLAUDE.md",
+   "class": "replace",
+   "formerly": [
+    "918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55",
+    "04214ad4d1c9fda3e2c11b4fd0fae6f059c302751a11956f818d199e910999f3",
+    "8bea8752e596fec22c25e27d81748e8a307a7544f99c01d006274c3dfd013f8a"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/catchup.md",
+   "target": ".claude/commands/catchup.md",
+   "class": "replace",
+   "formerly": [
+    "7420230497bb6e75dacfd9f1328f9034c0151b828f1dd8d03883f9de9f9161a9",
+    "ae600ab5da21acdb5e1fcf5beb06d35c38e30596f46f060d9e5b0e4957487e35",
+    "148147a1d45ed405977f6a732feec9db25d29a3ba02d77f3320094b66807b944",
+    "0fba0611bebd4594bd35bb498217ef281bb07a17c508216698734b922bce486a"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/decision.md",
+   "target": ".claude/commands/decision.md",
+   "class": "replace",
+   "formerly": [
+    "c6d68a38c857890e2fd313dc0448bba0d894f7c39a3cea5a557c424d4da49105",
+    "390d7b6f04dcfdfa1e65396593d51ad71b7916b057e367cc737adae2820f7037"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/handoff.md",
+   "target": ".claude/commands/handoff.md",
+   "class": "replace",
+   "formerly": [
+    "c8e3da533eb92abc6aacf995fe4e2fbc231ad10a4ca1fabcc1d98f6c236f5a99",
+    "dd7f9a20875d832a80920bebeff981abbef03162b4b201d7e4ba76c0d15a8813",
+    "2ef227ad54fe3fed28aefcd7e36fcc20513621b2f21019f4d6c9b22c7e8b979b",
+    "bb50e867ce09240528fdc56e917704172aa869fec7bc3bb539b6e4c0d659a654"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/plan.md",
+   "target": ".claude/commands/plan.md",
+   "class": "replace",
+   "formerly": [
+    "7eeca1e480fafcb6b9618f2c11225584f253c7e1d19258d9d3073a4ff556630c",
+    "a0cb06a240031bce367b2b3385a1e79527837c77c36c9f0d1a6d66dc2cd6c2eb",
+    "60e4eb1a918f0715f9cd28d7b5ef83afc6f29f5e8fbd17790635a90ddf752adb",
+    "2778f09f9c198e8fa75c7a4f46ec855cf53f9d230401f554fe34242db76d5670"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/playbook.md",
+   "target": ".claude/commands/playbook.md",
+   "class": "replace",
+   "formerly": [
+    "68bc100abb6836af03bf4fd57ee07a639c3b30b1284e044ae6e66c180a7dc774",
+    "1f74a6293729eae11ebb40f3905135b9b1d41c45f922be5565a653ee39e14992"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/update-governance.md",
+   "target": ".claude/commands/update-governance.md",
+   "class": "replace",
+   "formerly": [
+    "bc11013e02545070fb37bedee4e0cfa5112628bfcd9ae26194dcab2c1d2ec954",
+    "28decbbb513d3c0897fee4692aab8549b787a9b1ecd4a1602ee2e13136d4be19",
+    "2e6715044d644845298bca940f949b3a7d19acb473ce3b741d57e5a29ad1d26e",
+    "8d0c1b792f657addc5f13e493839897ec53255108012561d7e7b690080078867",
+    "22d2179564632bba37f1948e5a448328416ec47f3b28b1ec67b9d513d5e3f670",
+    "9bca1571b3d7dd14e4feb2a48a97994ff910bb477c56e1db7573981d588ac6b0",
+    "de464cf1b61ec803049b1d5a586ce4a655631b2f65b79c8c3239a4206fb9dc46"
+   ]
+  },
+  {
+   "source": "templates/playbooks/codereview.md",
+   "target": ".agents/playbooks/codereview.md",
+   "class": "replace",
+   "formerly": [
+    "e633a1dbfccfe1e561621767fcaf0d39e4cbb2c147bd838345f365e054f805d7",
+    "90acfc0f9a79e9d981aa1189cd73d8feaaf20b13d91b7e56df5224d0e6f674ef",
+    "c7230557817a838b928d0566c6dcac7713fb9bfbab9a21c03f0ca45bca90269b",
+    "c347cb54781d6e9431ec3eb9fbcff9bb698d35a9ed023b3ac12f137c234f15bb",
+    "fa9bbdb945b504cd5390a81e32b12688c63e6c54c826b7d26c5d8bbad0100ed6",
+    "09e1869f31909858919d299ea9ad7b9761eba94ee2a2b3dd77cd13343a1b9f45",
+    "789e6113adfe04000feda2e9c7c899a8615338b5648f88c67ad68989d3849e3d",
+    "bdb6f98b9129a9195f804acb869b92106011004cd551210ba46a2005c588eed8",
+    "e393e53367f0f140d707d1917a34501095dcad0f1a4636fcc876147811ee5a05",
+    "8b8c3b0f681a6ee24feda014f81d8f3717a7817d3e771aedd4723ec56434e777",
+    "db158d02d7c4129b9e48b0d1c442eb878bda0dec7e8eadfac536f8e324e3ed6f",
+    "9eaf18f233f7f1ef5c1a24c4da2832a8f26795d61a1b704e7b31394ea334214e",
+    "276c912072cb2e51de7dd0765dabee7b917150329f761d7d6f23ab514feb14e2",
+    "3309887734ea9f05a9dd7d4547a97deda1274a2889b3e9a1db5663a1a27e9de1",
+    "925268ef9e7ea2d962dc7edfd5180daa01675b323a2fb205801d9cc0cbc5ca36",
+    "16cf92985caea5c2b82a05a970eaf53788494bdcb624587ac236c8e545331b2c"
+   ]
+  },
+  {
+   "source": "templates/playbooks/openreview.md",
+   "target": ".agents/playbooks/openreview.md",
+   "class": "replace",
+   "formerly": [
+    "9fad921abe2c8836ff6045372d41b719cf0dbb01ff1dcd689999bd1e2ef2dd36",
+    "1f3e4b4e4ce2f46f3da9f61b0f0235e18effa7130bd8139165670e9bdb5b4f81",
+    "1ad54e1e20fec49db0a12e98634cfe141b968356643e72fa43f2cb4cb76cb1c1",
+    "dcb642d998c8eb4c57b01203cad0422c355ac14e63825aaca9d5f8e8168761b6",
+    "49d5faf163d9078bc6b15ef4c5014db0ff1052383de2827027da9d344aa3e968",
+    "8fe95e3cf95da9399fe7ef99d386315913657bbc05d0796f065e7f2b3328e166",
+    "aedfcc750e54780715080cc4b9d42fb990a150ec5363eebdce494f0bc5b0eb07",
+    "53c1ba9345398884708672ab5df351d4eed18a1617558d3ae76453b6f803669f"
+   ]
+  },
+  {
+   "source": "templates/playbooks/git.md",
+   "target": ".agents/playbooks/git.md",
+   "class": "replace",
+   "formerly": [
+    "00597cffc6fb4d1f1311bbd5f7e6e155131733d4dae7c11df8686c78ff44f68e",
+    "f6ca208237c04a8be08cf296b07b73ba535943c63591b987250a89cac379b6c6"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/catchup/SKILL.md",
+   "target": ".agents/skills/catchup/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "b83cead80ca65d3d7e1b42a350fd679298cddcb34ab1ad91bfb4462b1cbcec59",
+    "6cd56df652df06350d2768b1e9c064adf3f9118dfffde0327658dee6b1c50594",
+    "69c4b07f2de36114f46864f39d3e2d2b581bc5f8323d54003eb1d389ec30e6a5"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/handoff/SKILL.md",
+   "target": ".agents/skills/handoff/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "6b41450a060dadc0707bbd73cb580e1d610ae8b412317e6a63e9e87804abeda1",
+    "88c61071181a6c670a2b758eb79d5bc3edee394131e50bc34d07c58ca78cb4e0",
+    "c5efbcb3921b8e24117d7577b816e53344b19e1f8c10c819546f3a344544022c",
+    "e0cabe214c887a83617b08e0764067fed8576c865a7aa93c1630d1c7b17c8e38"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/decision/SKILL.md",
+   "target": ".agents/skills/decision/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "28658ded7a970cb76b05ae0d9d7e2f274a578992e91e4a482a5c423364fbd469",
+    "8c77c719e1fc61989a93f73b38231ed1784848ddd7478a60b755f64cbd7b8878"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/plan/SKILL.md",
+   "target": ".agents/skills/plan/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "bb60b5c05cfee5e9773a58417868338726de7ee8e975baf1eedad6a40f082a45",
+    "65983aaeef6ef8f487d28c65bfa10196dcb6eeb31534db2aa1c78e1b9e517c76",
+    "215233e02c685385f6b66c6ed840d706156eac0b12eb3b9755d783378261332d",
+    "9c87208157a25dff51b2b5cea603fefe8a99b69ca6c6c4705eed55e56f4fa4bb"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/playbook/SKILL.md",
+   "target": ".agents/skills/playbook/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "89f16d93a44c6f961309b4de0338638d5a2758c9459dad911da20b608276d233",
+    "64791b170d5b8b47514aa789e4330207e953d5693ed3c1e5d0f8502382c20dbf"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/update-governance/SKILL.md",
+   "target": ".agents/skills/update-governance/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "3b4b1700e33f6700f50503f857ee7f56294ea1bc66b29069a52fa0e49a43e3c6",
+    "52e8d17bb4c69e7a1b63877eb0a1cf19d2e2622cf8b9dd620960748c008fc892",
+    "69db84a8f5b7ba0a1d013d9e8b02ff352465cf87eadb4970bb8168d97b23f2fc"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/codereview/SKILL.md",
+   "target": ".agents/skills/codereview/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "5860b4d492b78b18827f366e48bd96573c5935b655ddf94eb32129181088a8eb",
+    "a65c5c4c90c40064709d96bd043ec96068e39b1f2befd008da95941c0d2d6c12",
+    "7813b8e2ae1b03e09302ba2baa59815dc1478cf88757100d52b5c0bbde3bef9c"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/review/SKILL.md",
+   "target": ".agents/skills/review/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "4ef18624df352399b9181ebabeef70f1142e2aef08f158cf0ae2f50f845ffbba",
+    "c3df5511c662823509d42a8511eb9e78d24c98bdab9fffcf1a12b6080f3213f5",
+    "b90f7ff2fd8ae29b81877cb6630af37f54b2c1f5a867a54a0d59ba61b62def91"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/openreview/SKILL.md",
+   "target": ".agents/skills/openreview/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "9c4fd4e4bea8413475cb7ee8c8019b8a74be3914621feb8bc4acc5c5da360b56"
+   ]
+  },
+  {
+   "source": "templates/skills/shared/git/SKILL.md",
+   "target": ".agents/skills/git/SKILL.md",
+   "class": "replace",
+   "formerly": [
+    "15351ce8e677fed6121b5d486e9f72e15973a28c89f7d7b4403187bebc45b3b8"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/codereview.md",
+   "target": ".claude/commands/codereview.md",
+   "class": "replace",
+   "formerly": [
+    "d31de12ab2d7eb5ddbbf34725f705523d0ef982d39be46d8adb0d0f2bfe1d16e",
+    "bd1c9795cc33ea6b7b4a7127192a85dcccbadd2629214b0031ca0f39aea5bcff",
+    "513013ae687a4b4a6bc51533621ca946fb9ca2e22f407b67e2da80f85b3efa1d"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/review.md",
+   "target": ".claude/commands/review.md",
+   "class": "replace",
+   "formerly": [
+    "631b2752e84f36caf2687f18078a563a81a4de99b5be62c39442ef97dc147f0e",
+    "6b34abb8a8b4c413f15e0bbf913edaad32d91c019ee8d593416df82ce946d59a",
+    "c3d99233a41ba35776ec0fdb89ed8eb3b02082a471a1de5dddb05ddd1e347911"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/openreview.md",
+   "target": ".claude/commands/openreview.md",
+   "class": "replace",
+   "formerly": [
+    "e20579956c5aebf0744a21f15d0db93738ae770c843a40e31f892d4d85ff7f80"
+   ]
+  },
+  {
+   "source": "templates/commands/claude/git.md",
+   "target": ".claude/commands/git.md",
+   "class": "replace",
+   "formerly": [
+    "152efb879d443b45d86b7c7c1fed640990d289f57e2fca374dc87b8185e72232"
+   ]
+  },
+  {
+   "source": "templates/hooks/claude/protect-governance.py",
+   "target": ".claude/hooks/protect-governance.py",
+   "class": "replace",
+   "formerly": [
+    "9a9d0f77734006628f8b95ff5cef6ea818429f1f585c53943532b3c87ef316dd",
+    "107368242e292dceaa374afc52463ef68fcf286baa0038a6d7fc7ec5fe07c602",
+    "614fe03824266e72ce7d9b12c9b2d9d2417d6f1c3c74952fd158e6ce00beb31c",
+    "8c786c9936ddf927a53455795b3af525dbf5c1db0e67b996e2ef78ade9e27db1",
+    "010f53e6ab8b3f1a62865e649e2aa7508a1c5a77f468fff3d52d5f961335c017",
+    "45f3681bc06f6679d87f68136479997c2199a84eaa58e203ecd0303cd5de3778",
+    "54ee3b5a5c055f019b567024057608681ea40de5c596309069511c4eea4be5e6",
+    "04512e137cb464c64559ae2a93ac7a279e1ab65623ea0f7a7e93937d71e6a88f"
+   ]
+  },
+  {
+   "source": "templates/hooks/claude/settings.json",
+   "target": ".claude/settings.json",
+   "class": "replace",
+   "formerly": [
+    "10cbb3bd2c3967bb43d204b3db93c587f695b8c16cd842de4e7f8c011649ab94",
+    "033e5394ad9cf77fe739efc283f168500a377f742391042c128ef35941a2bd9e",
+    "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
+    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
+   ]
+  },
+  {
+   "source": "templates/playbooks/catchup.md",
+   "target": ".agents/playbooks/catchup.md",
+   "class": "replace",
+   "formerly": []
+  },
+  {
+   "source": "templates/playbooks/handoff.md",
+   "target": ".agents/playbooks/handoff.md",
+   "class": "replace",
+   "formerly": []
+  },
+  {
+   "source": "templates/playbooks/plan.md",
+   "target": ".agents/playbooks/plan.md",
+   "class": "replace",
+   "formerly": []
+  },
+  {
+   "source": "templates/commands/claude/toolkit.md",
+   "target": ".claude/commands/toolkit.md",
+   "class": "replace",
+   "formerly": []
+  },
+  {
+   "source": "templates/skills/shared/toolkit/SKILL.md",
+   "target": ".agents/skills/toolkit/SKILL.md",
+   "class": "replace",
+   "formerly": []
+  }
+ ],
+ "retired": [
+  {
+   "target": ".agents/playbooks/reviewloop.md",
+   "comment": "Split into codereview.md + openreview.md (owner decision 2026-07-16).",
+   "formerly": [
+    "80fcabf996af6afe911ff9678c03d8f6ef6f14cc31d61a47f248f5670e0662c4",
+    "82b45743f4a9ce9fe9631db053541711628e18f87328953a2c658d51c3157c7e",
+    "20b3b308da346ff05f7ed85bd5b81f3d262986cd3b14592b84ad61ab00608c00",
+    "268916110da2964b5e067c64bedd55e3c4a38404ccbfdde950cbfe04c75e7719",
+    "9f543d10b6bf9c897df5fb198ccd172653e69ec85115a51f87ec2dd318b9117e"
+   ]
+  },
+  {
+   "target": ".claude/agents-md-tripwire.py",
+   "formerly": [
+    "cdf2662f113d97b53ac8108d8a0a878bfcefb7ed6d86e22a8638f8d157bdeb4e"
+   ]
+  },
+  {
+   "target": ".codex/hooks.json",
+   "formerly": [
+    "4173da747a86d191c119d5da7283a11b5aa5b317486a0067e0eef08134fd8d76",
+    "9895cbd9520b5a5989628c2d0eb3a74fd0bdfb99137da434843a2d93cc0bbf0e",
+    "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
+    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
+   ]
+  },
+  {
+   "target": ".codex/agents-md-tripwire.py",
+   "formerly": [
+    "cdf2662f113d97b53ac8108d8a0a878bfcefb7ed6d86e22a8638f8d157bdeb4e"
+   ]
+  },
+  {
+   "target": ".grok/hooks/reground.json",
+   "formerly": [
+    "d05553c336961e3906e3e60d91671719e4de4491526efb6c85c089af4270ab84",
+    "f79c84fffd21f076de6857504ed09a1d68908d85521d2ee273353ca9412fe7d9"
+   ]
+  },
+  {
+   "target": ".agents/repo-map.json",
+   "comment": "Generated per-repo at bootstrap time, so no shipped hash can match: removal is always reported as drift (strict converge, 2026-07-16).",
+   "formerly": []
+  },
+  {
+   "target": ".agents/artifact-manifest.json",
+   "comment": "Generated per-repo at bootstrap time, so no shipped hash can match: removal is always reported as drift (strict converge, 2026-07-16).",
+   "formerly": []
+  },
+  {
+   "target": ".agents/hooks.json",
+   "formerly": [
+    "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
+    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c",
+    "7c9ecd7ce0ed63e78fa9c0c94092cf5c0e19e2254454e5e7e8a922ad8e37c340",
+    "878cba5f5dcaad8bfbc7ff97324683a1f4c3238a36e8a9b01cfa0ad67dcc2c42"
+   ]
+  },
+  {
+   "target": "GEMINI.md",
+   "comment": "Retired 2026-07-22 (owner ruling, 'gemini shim can go'): shipped fleet-wide with no recorded positive live check on any gemini-family harness, against the shipped-only-where-verified rule. Re-enters only on a recorded positive live check. formerly[] carries the past shipped hashes plus the outgoing version's nhash (per the maintenance rule) so deployed copies are cleanly removed rather than reported as drift. The source template templates/shims/GEMINI.template.md stays on disk (guarded by tests/test_templates.py) so re-entry is a one-line move back to artifacts[].",
+   "formerly": [
+    "918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55",
+    "30bd521b505a07f399d8b3a8f7d455c49c33a1405711dc4d00feb3bfac8eb102",
+    "ba2ba831a62079adfbb4a4d005e9c961346a2be33e3b6d110e711497c506bfe2",
+    "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+   ]
+  },
+  {
+   "target": ".agents/playbooks/harness-update.md",
+   "comment": "Retired 2026-07-23 (owner ruling): the fleet-global model map and its apparatus were deleted; reviewer dispatch is literal-or-ask with no committed model lists. formerly[] carries the past shipped hashes plus the outgoing version's nhash (per the maintenance rule) so deployed copies are cleanly removed rather than reported as drift.",
+   "formerly": [
+    "fd23460c00093805eab07421f1653503fb9f868f140b886499c7decd398ebfa6",
+    "876fed06d23573cbfb5d445db5d12c983447cd6f6c72794b245113044cc368e5"
+   ]
+  },
+  {
+   "target": ".agents/skills/harness-update/SKILL.md",
+   "comment": "Retired 2026-07-23 (owner ruling): the fleet-global model map and its apparatus were deleted; reviewer dispatch is literal-or-ask with no committed model lists. formerly[] carries the past shipped hashes plus the outgoing version's nhash (per the maintenance rule) so deployed copies are cleanly removed rather than reported as drift.",
+   "formerly": [
+    "b1f84920dec6d572bc31e8974ea5fd4d6f85c4558100d549d1c4b30411ea2a14"
+   ]
+  },
+  {
+   "target": ".claude/commands/harness-update.md",
+   "comment": "Retired 2026-07-23 (owner ruling): the fleet-global model map and its apparatus were deleted; reviewer dispatch is literal-or-ask with no committed model lists. formerly[] carries the past shipped hashes plus the outgoing version's nhash (per the maintenance rule) so deployed copies are cleanly removed rather than reported as drift.",
+   "formerly": [
+    "6b1cf48eeac06e856762c9439be8f0bd07b0a54cc0be15b092bf72f79ddd7f94"
+   ]
+  },
+  {
+   "target": ".claude/commands/drift.md",
+   "comment": "Retired 2026-07-23 (owner ruling, owner-surface D4): the `drift` owner word is retired; its state-hygiene sweep rides `catchup` (templates/playbooks/catchup.md) and its compare-against-evidence skill stays agent-level. formerly[] carries past shipped hashes plus the outgoing version's nhash so deployed copies are cleanly removed.",
+   "formerly": [
+    "322bed67010ed0b829ea34633e8bcba54ee125820b0a41719bc78ab9d01bc5a5",
+    "fad07c35ff6350ca359dc64b166296d6940e42d3ccea38d18035d449ded53519",
+    "ecea437bc66f4bab0a4642390eb8afb9fc18679ec6f91455ff97e8b3b03a7c4d",
+    "9ea6bab45687273d4cab10e179813169fd97e14bed07b6706c1830e316e4ce50"
+   ]
+  },
+  {
+   "target": ".agents/playbooks/drift.md",
+   "comment": "Retired 2026-07-23 (owner ruling, owner-surface D4): the `drift` owner word is retired; its state-hygiene sweep rides `catchup` (templates/playbooks/catchup.md) and its compare-against-evidence skill stays agent-level. formerly[] carries past shipped hashes plus the outgoing version's nhash so deployed copies are cleanly removed.",
+   "formerly": [
+    "a196a3f47a76700ce6d58b2cd53c89d90a00d08cc104e20094be236f3c96f08f"
+   ]
+  },
+  {
+   "target": ".agents/skills/drift/SKILL.md",
+   "comment": "Retired 2026-07-23 (owner ruling, owner-surface D4): the `drift` owner word is retired; its state-hygiene sweep rides `catchup` (templates/playbooks/catchup.md) and its compare-against-evidence skill stays agent-level. formerly[] carries past shipped hashes plus the outgoing version's nhash so deployed copies are cleanly removed.",
+   "formerly": [
+    "3c9278a91df2b0b93c27a3cb59d6c77cb86f46da68cf6b0bbbf4e0686e2942bd",
+    "b82d2f80ba294ad5e0615664058f30c6d8984587a7f1fd31bd762a8f09c9dccc",
+    "4b8502530773291ab1af4e6474a109627e15b5f5e7ea91cac17838083da5a3fb",
+    "f2dd9fd38c3e23f638edf2949f3943c835934486c2c9a9379ff4ae342f298c4d"
+   ]
+  }
+ ],
+ "machine_local_exclusions": {
+  ".claude": [
+   ".claude/settings.local.json"
+  ],
+  ".codex": [],
+  ".gemini": [],
+  ".grok": []
+ }
+}
