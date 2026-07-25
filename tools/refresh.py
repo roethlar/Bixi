@@ -597,16 +597,35 @@ LINT_EXEMPT_PATHS = frozenset({
 })
 
 
+_IPV4ISH = re.compile(r"\d{1,3}(?:\.\d{1,3})*/\d{1,3}")
+
+
 def _lintable_repo_path(tok: str) -> bool:
     """True for backtick tokens that read as repo-relative file references.
     Conservative by design: commands, URLs, globs, placeholders, file:line
     cites, absolute/outside paths, and bare shorthand names are all skipped —
     a missed lint is cheap, a false LINT line erodes trust in the report."""
-    if any(c in tok for c in ":<>*{}$\\(),"):
+    if any(c in tok for c in ":<>*{}$\\(),="):
         return False
     if tok.startswith(("http", "..", "~", "/", "-", "@")):
         return False
-    return "/" in tok
+    if "/" not in tok:
+        return False
+    if _IPV4ISH.fullmatch(tok):
+        return False
+    # Positive shape test, not another blocklist. Slash-bearing prose is
+    # mostly NOT paths — git refs (`origin/master`, `fix/mpx-1`), package and
+    # tap names (`gromgit/fuse/sshfs-mac`), option strings — and enumerating
+    # the names they use is unbounded: remotes, branches and taps are named
+    # arbitrarily. A real reference names a file (dotted extension) or an
+    # explicit directory (trailing slash), so require one of those. The cost
+    # is that an extensionless directory written without its trailing slash
+    # goes unlinted, which the docstring's own trade — a missed lint is
+    # cheap, a false LINT line erodes trust — settles in favour of silence
+    # (issue #10).
+    if tok.endswith("/"):
+        return True
+    return "." in tok.rsplit("/", 1)[1]
 
 
 def _deletion_commit(target_repo, tok, _cache):
