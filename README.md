@@ -1,117 +1,97 @@
 # Bixi
 
 > **Bixi** (赑屃) is the dragon-turtle of Chinese myth, who carries stone
-> steles — durable inscriptions — on his back for eternity. That is this
-> toolkit's whole job: carry the durable record, so nothing drifts.
+> steles — durable inscriptions — on his back for eternity.
 
-A personal governance toolkit for repositories maintained with LLM coding
-agents. It keeps code, docs, decisions, and agent behavior aligned so future
-agents do not work from stale assumptions or missing chat context.
+Bixi carries the durable record for a repository worked on by LLM coding
+agents, so nothing drifts.
 
-Every governed repo gets the same two-layer setup:
+## The problem
 
-- `AGENTS.md` — the portable constitution, identical bytes in every repo,
-  installed and replaced whole by the toolkit (never hand-edited): prime
-  invariants, universal invariants, the operator vocabulary, verification
-  and git-safety rules.
-- `.agents/` — everything repo-specific: `repo-guidance.md` (rules, reading
-  order, the verification command), `state.md` (current work, with rotation
-  to an archive), `decisions.md` (settled decisions), `push-policy.md`,
-  and the operator playbooks (the shipped set is enumerated in
-  `tools/shipped-set.json`, the toolkit's manifest).
+Agent sessions are amnesiac. Every new session starts cold, and the things
+that should govern it — why this repo does things this way, what was already
+decided, what must never happen again — live in chat logs the next session
+will never see. So the truth drifts: docs disagree with code, decisions get
+relitigated, and rules earned from a real incident quietly stop applying.
 
-Plus harness adapters (the `CLAUDE.md` shim, operator command
-wrappers, and two hooks — the Claude Code compaction re-ground and the
-blocking protect-governance pre-edit deny), shipped only where the mechanism
-is verified to work (see the harness-capability record linked below).
+Bixi puts that record in the repository, in a fixed place, in a form the next
+agent reads before it touches anything.
 
-## Install into a new project (one command)
+## What lands in your repo
+
+- **`AGENTS.md`** — the portable constitution. Identical bytes in every
+  governed repo: prime invariants, the operator vocabulary, verification and
+  git-safety rules. Installed and replaced whole; never hand-edited.
+- **`.agents/`** — everything specific to *your* repo: the rules and
+  verification command, current state, settled decisions with the evidence
+  behind them, the push policy, and the operator playbooks.
+- **Harness adapters** — a `CLAUDE.md` shim, command wrappers, and two hooks
+  (a compaction re-ground and a blocking pre-edit deny that protects the
+  governance files). Shipped only where the mechanism is verified to work on
+  that harness, never on assumption.
+
+Governed repos inherit no runtime dependency: it's Markdown plus one JSON
+settings file.
+
+## Start a new project
 
 ```sh
-<path-to-this-repo>/tools/new-project <project-dir> [hint]
+<path-to-bixi>/tools/new-project <project-dir> [hint]
 ```
 
-(Windows: `<path-to-this-repo>\tools\new-project.cmd <project-dir> [hint]` —
-verified on macOS/Linux; the Windows launcher follows the repo's documented
-Windows probe contract and is unverified live until its first Windows run.)
+Windows: `<path-to-bixi>\tools\new-project.cmd <project-dir> [hint]`
 
-Creates `<project-dir>` if needed, runs `git init`, installs the governance
-set, and offers to launch a detected agent harness in it — the agent asks
-two short questions (what are we building, and the push policy) and
-finishes setup with a first commit. The optional hint primes the
-agent ("a markdown todo CLI") so setup opens with a confirmation. The
-launcher finds a working Python itself; no interpreter knowledge needed.
+Creates the directory, runs `git init`, installs the governance set, and
+offers to launch an agent harness it detects to finish setup — it asks what
+you're building and how you want pushes handled, then makes the first commit.
+The optional hint ("a markdown todo CLI") means setup opens with a
+confirmation instead of an interrogation. The launcher finds a working Python
+itself.
 
-## The two flows
+## Adopt an existing repo
 
-**Bootstrap (judgment — an agent session).** Open a fresh agent session in
-the target repo and paste:
+Open an agent session in that repo and paste:
 
 ```text
-Read <path-to-this-repo>/procedures/bootstrap.md and follow it.
+Read <path-to-bixi>/procedures/bootstrap.md and follow it.
 ```
 
-The agent syncs this toolkit, discovers the repo live, inventories any
-existing governance (migrate / supersede / leave), drafts the repo-specific
-files under a self-ignored scratch dir, and presents one plain-English
-approval summary. On approval it installs everything — drafts plus the
-shipped set — as ONE scoped commit. Nothing changes before you approve.
+The agent discovers the repo live, inventories any governance it already has
+(migrate, supersede, or leave — each with a reason), drafts the repo-specific
+files in a scratch directory, and shows you one plain-English approval
+summary. Nothing changes until you approve; on approval everything lands as
+one commit.
 
-**Refresh (mechanical — one command).** From any governed repo:
+## Keep a repo current
+
+From any governed repo:
 
 ```bash
-py -3 <path-to-this-repo>/tools/refresh.py    # or python3 on macOS/Linux
+python3 <path-to-bixi>/tools/refresh.py    # py -3 on Windows
 ```
 
-(or `/update-governance` in Claude Code; codex, grok, and agy sessions get
-the same entry point as the `update-governance` skill, installed under
-`.agents/skills/` — verified on all three). The script syncs the toolkit,
-reconciles the repo to the shipped artifact set — installs what's new,
-updates stale files, removes retired ones — and makes one scoped commit
-recording the toolkit version. Installed governance is toolkit-owned:
-committed content that matches no shipped version is drift and is restored
-(or, for retired files, removed), reported as a DRIFT line naming the
-commits that introduced it; uncommitted or untracked content on touched
-paths makes the run refuse and change nothing. A repo gets current the next
-time you work in it; there is no registry and nothing to maintain
-centrally.
+It reconciles the repo to the shipped set: installs what's new, updates what's
+stale, removes what's retired, and makes one commit recording the toolkit
+version. Governance files are toolkit-owned, so committed content matching no
+shipped version is drift — reported with the commits that introduced it, and
+restored. Uncommitted work on any path it would touch makes the run refuse and
+change nothing.
 
-## Feedback
-
-Toolkit defects and field-earned governance rules are filed as GitHub issues
-on the [development
-repo](https://github.com/roethlar/AgentGovernanceBootstrap/issues) (agents
-file only on an explicit owner go; no secrets or PII — issues are public).
-Open issues are the triage queue; closed issues are the outcome ledger.
+There's no registry and nothing to maintain centrally. A repo catches up the
+next time you work in it.
 
 ## Requirements
 
 - Git.
-- Python 3.10+ (`tools/refresh.py`, stdlib only). On Windows prefer `py -3`;
-  a bare `python3` on PATH is often the Microsoft Store stub.
-- An agent harness that can read files and run commands (bootstrap only;
-  refresh is plain Python).
+- Python 3.10+ (standard library only). On Windows prefer `py -3`; a bare
+  `python3` is often the Microsoft Store stub.
+- An agent harness that can read files and run commands — for setup and
+  adoption only. Refreshing is plain Python.
 
-Governed repos inherit no runtime dependency: installed guidance is Markdown
-plus one JSON hook settings file.
+## Development
 
-## Layout
-
-- `procedures/` — greenfield setup, bootstrap/migration for an existing
-  repo, governance remediation, and the fresh-eyes check.
-- `templates/` — the AGENTS template, `.agents/` file templates, shims,
-  wrappers, playbooks, the hook settings.
-- `tools/refresh.py` + `tools/shipped-set.json` — the refresh mechanism and
-  the manifest of what ships where.
-
-This repository is the released toolkit. Its development source — design
-notes, the per-harness verify-once record, the decision log, and the
-archives — lives in
-[AgentGovernanceBootstrap](https://github.com/roethlar/AgentGovernanceBootstrap):
-
-- [`docs/design.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/design.md)
-  and [`docs/usage.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/usage.md)
-- [`docs/harness-capabilities.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/harness-capabilities.md)
-  — which adapters are verified on which harness
-- [`.agents/decisions.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/.agents/decisions.md)
-  — every settled decision, with the evidence that produced it
+Bixi is the released toolkit. It's developed in
+[AgentGovernanceBootstrap](https://github.com/roethlar/AgentGovernanceBootstrap),
+where the design notes, the per-harness verification record, and the full
+decision log live. File issues
+[there](https://github.com/roethlar/AgentGovernanceBootstrap/issues).

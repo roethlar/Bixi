@@ -2,11 +2,19 @@
 """publish: release the toolkit to the clean public product repo.
 
 Copies the publish set — whole paths, no lists (owner ruling 2026-07-23):
-tools/, templates/, procedures/, README.md — from this development repo
-into the clean product-repo checkout, mirrors it exactly (stale files
-removed), makes one release commit, and pushes. The owner runs it
-directly; no git knowledge needed. The product repo path is given once
+tools/, templates/, procedures/, and the product README — from this
+development repo into the clean product-repo checkout, mirrors it exactly
+(stale files removed), makes one release commit, and pushes. The owner runs
+it directly; no git knowledge needed. The product repo path is given once
 (`publish <path>`) and recorded in .agents/machines.md for later runs.
+
+Each entry maps a development-repo source to its product-repo target. The
+two differ for the README: the product repo's front page is written for
+someone arriving cold at the released toolkit, while this repo's README.md
+is written for someone working on it. Mirroring means the product repo
+cannot keep a file of its own — everything but .git is cleared before the
+copy — so a product-only file lives here, under product/, and publishes to
+its own name there.
 """
 import argparse
 import shutil
@@ -14,7 +22,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-PUBLISH_PATHS = ["tools", "templates", "procedures", "README.md"]
+PUBLISH_PATHS = [
+    ("tools", "tools"),
+    ("templates", "templates"),
+    ("procedures", "procedures"),
+    ("product/README.md", "README.md"),
+]
 
 
 def git(repo: Path, *args, check=True):
@@ -77,10 +90,10 @@ def main(argv=None) -> int:
 
     # Preflight the whole publish set BEFORE touching the product repo:
     # every refusal above and below this point leaves it byte-identical.
-    for rel in PUBLISH_PATHS:
-        if not (dev / rel).exists():
+    for src_rel, _dst_rel in PUBLISH_PATHS:
+        if not (dev / src_rel).exists():
             print("publish: {} is missing from the development repo — "
-                  "refusing to publish a partial set.".format(rel), file=sys.stderr)
+                  "refusing to publish a partial set.".format(src_rel), file=sys.stderr)
             return 2
 
     # Mirror the publish set exactly: clear everything except .git, then copy.
@@ -92,9 +105,10 @@ def main(argv=None) -> int:
         else:
             child.unlink()
     copied = 0
-    for rel in PUBLISH_PATHS:
-        src = dev / rel
-        dst = product / rel
+    for src_rel, dst_rel in PUBLISH_PATHS:
+        src = dev / src_rel
+        dst = product / dst_rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
         if src.is_dir():
             shutil.copytree(src, dst,
                             ignore=shutil.ignore_patterns("__pycache__", ".DS_Store"))
