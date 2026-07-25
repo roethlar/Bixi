@@ -1125,10 +1125,12 @@ def main(argv=None) -> int:
         # Read-only verification (2026-07-24): print hygiene findings and
         # exit — no sync, no reconcile, no commit, no offers. Exit 6 when
         # judgment findings are present so a session can branch on it.
-        warns = 0
-        for rel, msg, kind in lint_governance(target):
+        found = lint_governance(target)
+        warns = sum(1 for _rel, _msg, kind in found if kind != "note")
+        for rel, msg, kind in found:
+            if kind == "note" and not warns:
+                continue  # context for warns, never standalone (2026-07-25)
             print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, msg))
-            warns += (kind != "note")
         if warns:
             print("refresh: {} hygiene finding(s) need judgment.".format(warns))
             return 6
@@ -1204,7 +1206,11 @@ def main(argv=None) -> int:
             Path(args.plan_json).write_text(payload, encoding="utf-8")
         print("governance refresh plan against toolkit {} (read-only - nothing changed)".format(toolkit_sha))
         print(summarize(plan, sync_note))
-        for rel, note_msg, kind in lint_governance(target):
+        found = lint_governance(target)
+        has_warn = any(kind != "note" for _rel, _msg, kind in found)
+        for rel, note_msg, kind in found:
+            if kind == "note" and not has_warn:
+                continue  # context for warns, never standalone (2026-07-25)
             print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, note_msg))
         return 0
 
@@ -1308,9 +1314,17 @@ def main(argv=None) -> int:
             print("  (left in place; nothing was removed)")
     findings = lint_governance(target)
     warns = [(rel, msg, kind) for rel, msg, kind in findings if kind != "note"]
-    for rel, msg, kind in findings:
-        if kind == "note":
-            print("  NOTE {}: {}".format(rel, msg))
+    # Notes are context for warns, never standalone output (2026-07-25 owner
+    # ruling, superseding the print-always half of the 2026-07-09 direction).
+    # A git-vouched historical reference is permanent and carries no action,
+    # so printing it on every run of every repo is noise the owner cannot
+    # clear. The typo-safe distinction it feeds is unchanged: git history
+    # still decides note-vs-warn, and warns still print and still drive
+    # remediation.
+    if warns:
+        for rel, msg, kind in findings:
+            if kind == "note":
+                print("  NOTE {}: {}".format(rel, msg))
     if warns and not args.no_remediate:
         # Judgment findings: explain why the run cannot fully converge (the
         # LINT lines), then ASK whether to launch an interactive remediation
