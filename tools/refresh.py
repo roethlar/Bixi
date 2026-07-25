@@ -791,17 +791,24 @@ def stage(target_repo: Path, plan: Plan) -> None:
 
 
 def governance_roots(shipped: dict) -> set:
-    """First path segment of every manifest target that lives in a
-    directory - the trees the toolkit owns (.agents, .claude, ...). A
-    top-level file target (AGENTS.md) contributes no tree. The prune sweep
-    never leaves these roots."""
-    roots = set()
+    """Every directory the manifest names as an ancestor of a target, minus
+    the top-level roots themselves.
+
+    Deliberately NOT "everything under `.agents/` and `.claude/`": a real
+    repo's adapter directory holds content the toolkit does not own -
+    `.claude/worktrees/**` carrying build trees, caches, scratch checkouts.
+    Sweeping the whole root offered 100 empty directories in a governed repo
+    (vela, 2026-07-25), ~98 of them Rust build artifacts, for two that were
+    actually toolkit litter. Only a directory the manifest itself names can
+    be emptied by a refresh, so only those are candidates. A top-level file
+    target (AGENTS.md) contributes nothing; the roots are never removed."""
+    dirs = set()
     for section in ("artifacts", "retired", "seeded"):
         for entry in shipped.get(section, []):
             parts = Path(entry.get("target", "")).parts
-            if len(parts) > 1:
-                roots.add(parts[0])
-    return roots
+            for i in range(2, len(parts)):
+                dirs.add("/".join(parts[:i]))
+    return dirs
 
 
 def emptied_dirs(target_repo: Path, shipped: dict) -> list:
@@ -814,23 +821,19 @@ def emptied_dirs(target_repo: Path, shipped: dict) -> list:
     ours."""
     removable = set()
     found = []
-    for root in sorted(governance_roots(shipped)):
-        base = target_repo / root
-        if not base.is_dir():
+    # Deepest first, and a directory counts as empty when every entry it holds
+    # is itself already marked removable: a chain of empty directories
+    # collapses in one pass instead of one per run. Any file, or any entry
+    # that is not a removable directory (an unrelated subdirectory, a
+    # symlink), disqualifies it.
+    for rel in sorted(governance_roots(shipped), key=lambda p: (-p.count("/"), p)):
+        dirpath = target_repo / rel
+        if not dirpath.is_dir():
             continue
-        # Bottom-up, and a directory counts as empty when every entry it
-        # holds is itself already marked removable: a chain of empty
-        # directories collapses in one pass instead of one per run. Any
-        # file, or any entry that is not a removable directory (a symlink),
-        # disqualifies it.
-        for dirpath, _dirnames, _filenames in os.walk(str(base), topdown=False):
-            if Path(dirpath) == base:
-                continue
-            entries = os.listdir(dirpath)
-            if all(os.path.join(dirpath, e) in removable for e in entries):
-                removable.add(dirpath)
-                found.append(Path(dirpath).relative_to(target_repo).as_posix())
-    # Deepest first so a child is gone before its parent is attempted.
+        entries = os.listdir(str(dirpath))
+        if all(str(dirpath / e) in removable for e in entries):
+            removable.add(str(dirpath))
+            found.append(rel)
     return sorted(found, key=lambda p: (-p.count("/"), p))
 
 
