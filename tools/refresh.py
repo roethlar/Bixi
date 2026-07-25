@@ -34,7 +34,11 @@ Repo-owned files (.agents/state.md, decisions.md, repo-guidance.md,
 push-policy.md, comms-policy.md, machines.md, plans, review trails,
 archives) are never touched by reconcile — refresh's own mechanical
 repairs (recorded push-status lines, git-proven moved references,
-closed-decision archiving) are the only exception.
+closed-decision archiving) are the only exception. The manifest's seeded[]
+section is the one creation exception: the policy files that installed
+artifacts reference unconditionally are written from their templates when
+absent (a repo governed before they existed), reported with an ACTION line,
+and never read or compared again once they exist.
 
 Committability follows the recorded custody rules: git check-ignore per
 target path; a blanket harness-adapter-dir ignore (.claude/ etc.) gets the
@@ -245,6 +249,19 @@ def validate_manifest(shipped: dict, toolkit: Path) -> "list[str]":
         for h in ret.get("formerly", []):
             if not _HEX64.match(h):
                 errors.append("malformed hash for retired {}: {!r}".format(rt, h))
+    for sd in shipped.get("seeded", []):
+        st = sd.get("target", "")
+        check_rel("seeded source", sd.get("source", ""))
+        check_rel("seeded target", st)
+        if st in seen:
+            # Same duplicate-set as artifacts and retired: a seeded target
+            # that is also shipped or retired would be written once as a
+            # never-touched-again file and then reconciled or unlinked in the
+            # same run. Exit before the first write.
+            errors.append("target listed in both seeded and artifacts/retired: {}".format(st))
+        seen.add(st)
+        if not (toolkit / sd.get("source", "")).is_file():
+            errors.append("missing seeded source file: {}".format(sd.get("source")))
     return errors
 
 
@@ -291,6 +308,7 @@ class Plan:
         self.drift = {}     # target -> introducing-commit provenance line
         self.gitignore_repairs = []  # (line_no, old_line, new_lines)
         self.repairs = []   # (target, note) - mechanical fixes outside the shipped set
+        self.seeded = []    # target - installed because it was absent (seeded[])
 
 
 # Push-status lines are never recorded in state files (2026-07-11 ruling):
@@ -508,6 +526,18 @@ def classify(target_repo: Path, toolkit: Path, shipped: dict) -> Plan:
         else:
             plan.restore.append((art["target"], src))
             plan.drift[art["target"]] = _drift_provenance(target_repo, art["target"])
+    # Seeded files are repo-owned, not shipped: installed artifacts reference
+    # them unconditionally (AGENTS.md's push policy and communication level),
+    # but only the bootstrap procedure ever creates them, so a repo governed
+    # before they existed carries pointers to nothing. Backfill an absent one
+    # at its documented default; a present one is invisible here - never
+    # hashed, updated, restored, removed, or counted as current, so owner
+    # edits stay owner-owned (owner ruling 2026-07-25).
+    for sd in shipped.get("seeded", []):
+        if (target_repo / sd["target"]).exists():
+            continue
+        plan.install.append((sd["target"], toolkit / sd["source"]))
+        plan.seeded.append(sd["target"])
     for ret in shipped.get("retired", []):
         tgt = target_repo / ret["target"]
         if not tgt.exists():
@@ -927,7 +957,10 @@ def terse_line(target: Path, plan: Plan, sync_note: str, changed: bool,
         out = "refresh: {} — already current".format(repo)
     else:
         parts = []
-        for label, items in (("installed", plan.install), ("updated", plan.update),
+        seeded = set(plan.seeded)
+        installed = [t for t, _ in plan.install if t not in seeded]
+        for label, items in (("installed", installed), ("seeded", plan.seeded),
+                             ("updated", plan.update),
                              ("restored", plan.restore), ("removed", plan.remove)):
             if items:
                 parts.append("{} {}".format(len(items), label))
@@ -945,8 +978,10 @@ def terse_line(target: Path, plan: Plan, sync_note: str, changed: bool,
 
 def summarize(plan: Plan, sync_note: str) -> str:
     lines = []
+    seeded = set(plan.seeded)
     for label, items in (
-        ("installed", [t for t, _ in plan.install]),
+        ("installed", [t for t, _ in plan.install if t not in seeded]),
+        ("seeded", list(plan.seeded)),
         ("updated", [t for t, _ in plan.update]),
     ):
         for t in items:
@@ -1183,6 +1218,16 @@ def main(argv=None) -> int:
     print(terse_line(target, plan, sync_note, changed, commit_sha, args.stage_only))
     if git(toolkit, "status", "--porcelain", check=False).stdout.strip():
         print("  NOTE: toolkit tree is dirty; installed bytes may not match {}".format(toolkit_sha))
+    # A seeded file is the one result that needs the owner to do something
+    # afterwards (choose a level, choose a push policy), so it earns a line of
+    # its own past the one-line result rule (2026-07-23 owner-surface D3 —
+    # which governs per-item detail, not follow-up actions). Fires only in the
+    # run that seeds; the text comes from the manifest.
+    if plan.seeded:
+        actions = {sd["target"]: sd.get("action", "seeded (repo-owned from now on).")
+                   for sd in shipped.get("seeded", [])}
+        for t in plan.seeded:
+            print("  ACTION: {} {}".format(t, actions.get(t, "seeded (repo-owned from now on).")))
     findings = lint_governance(target)
     warns = [(rel, msg, kind) for rel, msg, kind in findings if kind != "note"]
     for rel, msg, kind in findings:

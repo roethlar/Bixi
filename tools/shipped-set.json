@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "comment": "The toolkit's shipped artifact set. tools/refresh.py reconciles a governed repo to exactly this set; installed governance is toolkit-owned (owner ruling 2026-07-16), so divergence is always drift and every run converges the repo. Classes: replace-whole (AGENTS.md: current or formerly-shipped versions update normally; divergent content is restored to current when git history shows a committed version once matched a shipped hash, and flagged as a foreign governance file - bootstrap, not refresh - when none ever did); replace (missing = install; matches a formerly-shipped version = update to current; anything else = drift, reported with its introducing commits and restored to current); retired (formerly-shipped target paths removed; drifted content is removed with a report - git history preserves it, and the dirty-tree refusal keeps uncommitted content from being machine-destroyed). All matching is newline-equivalent sha256: CRLF -> LF, and content differing only by at most one trailing final newline matches (issue #1). formerly[] lists normalized hashes of every version ever shipped, from git history. MAINTENANCE RULE: whenever a shipped source file changes, append the OUTGOING version's normalized hash to its formerly[] in the same commit - otherwise deployed copies of that version get reported as drift and restored instead of cleanly updated.",
+ "comment": "The toolkit's shipped artifact set. tools/refresh.py reconciles a governed repo to exactly this set; installed governance is toolkit-owned (owner ruling 2026-07-16), so divergence is always drift and every run converges the repo. Classes: replace-whole (AGENTS.md: current or formerly-shipped versions update normally; divergent content is restored to current when git history shows a committed version once matched a shipped hash, and flagged as a foreign governance file - bootstrap, not refresh - when none ever did); replace (missing = install; matches a formerly-shipped version = update to current; anything else = drift, reported with its introducing commits and restored to current); retired (formerly-shipped target paths removed; drifted content is removed with a report - git history preserves it, and the dirty-tree refusal keeps uncommitted content from being machine-destroyed). The separate seeded[] section is not a class of the shipped set: those are bootstrap-seeded repo-owned policy files that installed artifacts reference unconditionally, so refresh installs one that is absent (backfilling a repo governed before the file existed) and otherwise ignores it entirely - no hash comparison, no formerly[], no update, no drift, no removal. All matching is newline-equivalent sha256: CRLF -> LF, and content differing only by at most one trailing final newline matches (issue #1). formerly[] lists normalized hashes of every version ever shipped, from git history. MAINTENANCE RULE: whenever a shipped source file changes, append the OUTGOING version's normalized hash to its formerly[] in the same commit - otherwise deployed copies of that version get reported as drift and restored instead of cleanly updated.",
  "artifacts": [
   {
    "source": "templates/AGENTS.template.md",
@@ -501,6 +501,18 @@
     "4b8502530773291ab1af4e6474a109627e15b5f5e7ea91cac17838083da5a3fb",
     "f2dd9fd38c3e23f638edf2949f3943c835934486c2c9a9379ff4ae342f298c4d"
    ]
+  }
+ ],
+ "seeded": [
+  {
+   "source": "templates/comms-policy.template.md",
+   "target": ".agents/comms-policy.md",
+   "action": "seeded at the default (level 3 - normal). Set this repo's level by editing the marker line; refresh never touches this file again."
+  },
+  {
+   "source": "templates/push-policy.template.md",
+   "target": ".agents/push-policy.md",
+   "action": "seeded at the default (ask before pushing). Change it in that file if this repo should push without asking; refresh never touches this file again."
   }
  ],
  "machine_local_exclusions": {
