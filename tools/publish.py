@@ -27,6 +27,10 @@ PUBLISH_PATHS = [
     ("templates", "templates"),
     ("procedures", "procedures"),
     ("product/README.md", "README.md"),
+    # Ships for the same reason as the README: mirroring clears the product
+    # repo, and without it OS junk lands untracked and blocks the next
+    # release through the dirty-tree refusal.
+    ("product/.gitignore", ".gitignore"),
     # The front page references these by relative path; mirroring clears the
     # product repo first, so an unpublished asset is a broken image.
     ("assets", "assets"),

@@ -1,0 +1,63 @@
+# Bixi — published as the product repo's .gitignore.
+#
+# The product repo is a mirror: `tools/publish.py` clears everything but .git
+# and re-copies the publish set, so this file has to ship or it vanishes on
+# the next release. It exists mainly so OS junk in a local checkout does not
+# block a release — publish refuses to run over uncommitted changes in the
+# product repo, and an untracked .DS_Store is enough to stop it.
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+.netrwhist
+tags
+
+# Python — the tools are stdlib-only scripts, but running them leaves these
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Machine-local agent state: reviewer harness caches and per-user harness
+# settings are untracked by design in governed repos, and a clone of this one
+# is often governed too.
+.agents/review/*.local.json
+.claude/settings.local.json
+
+# Scratch
+*.tmp
+*.bak
+*.orig
+*.rej
