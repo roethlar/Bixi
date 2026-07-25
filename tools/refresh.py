@@ -1100,6 +1100,10 @@ def main(argv=None) -> int:
     ap.add_argument("--no-remediate", action="store_true",
                     help="never launch a live remediation session for lint findings; "
                          "print them instead (CI and automated runs)")
+    ap.add_argument("--prune", action="store_true",
+                    help="consent to removing directories left empty by retired "
+                         "files, without the interactive prompt (for shells that "
+                         "are not a TTY)")
     ap.add_argument("--lint-only", action="store_true",
                     help="read-only: print hygiene findings and exit (0 clean, "
                          "6 findings present); no sync, reconcile, commit, or offers")
@@ -1309,8 +1313,12 @@ def main(argv=None) -> int:
     if stale_dirs:
         for d in stale_dirs:
             print("  empty: {}".format(d))
+        # --prune is consent given on the command line. Without it the prompt
+        # needs a real TTY, and an owner driving refresh from a non-TTY shell
+        # (an agent harness, a wrapper) can never reach it — the cleanup would
+        # report forever and never run (observed 2026-07-25).
         interactive = sys.stdin.isatty() and sys.stdout.isatty() and not args.no_remediate
-        if interactive and confirm_prune(len(stale_dirs)):
+        if args.prune or (interactive and confirm_prune(len(stale_dirs))):
             for d in prune_dirs(target, stale_dirs):
                 print("  pruned: {}".format(d))
         else:
