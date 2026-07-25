@@ -1,4 +1,8 @@
-# Agent Governance Bootstrap
+# Bixi
+
+> **Bixi** (赑屃) is the dragon-turtle of Chinese myth, who carries stone
+> steles — durable inscriptions — on his back for eternity. That is this
+> toolkit's whole job: carry the durable record, so nothing drifts.
 
 A personal governance toolkit for repositories maintained with LLM coding
 agents. It keeps code, docs, decisions, and agent behavior aligned so future
@@ -14,12 +18,12 @@ Every governed repo gets the same two-layer setup:
   order, the verification command), `state.md` (current work, with rotation
   to an archive), `decisions.md` (settled decisions), `push-policy.md`,
   and the operator playbooks (the shipped set is enumerated in
-  `tools/shipped-set.json`, this repo's manifest).
+  `tools/shipped-set.json`, the toolkit's manifest).
 
 Plus harness adapters (the `CLAUDE.md` shim, operator command
 wrappers, and two hooks — the Claude Code compaction re-ground and the
 blocking protect-governance pre-edit deny), shipped only where the mechanism
-is verified to work (`docs/harness-capabilities.md`).
+is verified to work (see the harness-capability record linked below).
 
 ## Install into a new project (one command)
 
@@ -33,8 +37,8 @@ Windows probe contract and is unverified live until its first Windows run.)
 
 Creates `<project-dir>` if needed, runs `git init`, installs the governance
 set, and offers to launch a detected agent harness in it — the agent asks
-three short questions (what are we building, push policy, communication
-level) and finishes setup with a first commit. The optional hint primes the
+two short questions (what are we building, and the push policy) and
+finishes setup with a first commit. The optional hint primes the
 agent ("a markdown todo CLI") so setup opens with a confirmation. The
 launcher finds a working Python itself; no interpreter knowledge needed.
 
@@ -75,9 +79,10 @@ centrally.
 ## Feedback
 
 Toolkit defects and field-earned governance rules are filed as GitHub issues
-on this repo (templates under `.github/ISSUE_TEMPLATE/`; agents file only on
-an explicit owner go; no secrets or PII — issues are public). Open issues
-are the triage queue; closed issues are the outcome ledger.
+on the [development
+repo](https://github.com/roethlar/AgentGovernanceBootstrap/issues) (agents
+file only on an explicit owner go; no secrets or PII — issues are public).
+Open issues are the triage queue; closed issues are the outcome ledger.
 
 ## Requirements
 
@@ -92,15 +97,21 @@ plus one JSON hook settings file.
 
 ## Layout
 
-- `procedures/` — the bootstrap procedure and the fresh-eyes check.
+- `procedures/` — greenfield setup, bootstrap/migration for an existing
+  repo, governance remediation, and the fresh-eyes check.
 - `templates/` — the AGENTS template, `.agents/` file templates, shims,
   wrappers, playbooks, the hook settings.
 - `tools/refresh.py` + `tools/shipped-set.json` — the refresh mechanism and
   the manifest of what ships where.
-- `docs/` — design notes, `harness-capabilities.md` (the per-harness
-  verify-once record), usage, and `docs/history/` (archives).
 
-Live repo state is tracked in [`.agents/state.md`](.agents/state.md);
-settled decisions in [`.agents/decisions.md`](.agents/decisions.md). The
-2026-07-08 zero-based consolidation that produced this shape is recorded in
-[`docs/superpowers/plans/2026-07-08-zero-based-consolidation.md`](docs/superpowers/plans/2026-07-08-zero-based-consolidation.md).
+This repository is the released toolkit. Its development source — design
+notes, the per-harness verify-once record, the decision log, and the
+archives — lives in
+[AgentGovernanceBootstrap](https://github.com/roethlar/AgentGovernanceBootstrap):
+
+- [`docs/design.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/design.md)
+  and [`docs/usage.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/usage.md)
+- [`docs/harness-capabilities.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/docs/harness-capabilities.md)
+  — which adapters are verified on which harness
+- [`.agents/decisions.md`](https://github.com/roethlar/AgentGovernanceBootstrap/blob/master/.agents/decisions.md)
+  — every settled decision, with the evidence that produced it
