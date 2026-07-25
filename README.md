@@ -1,10 +1,18 @@
-# Bixi
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/bixi-banner-dark.png">
+  <img src="assets/bixi-banner-light.png" alt="Bixi — carries the durable record, so nothing drifts" width="620">
+</picture>
+
+Governance for repositories worked on by LLM coding agents.<br>
+Markdown and one JSON file · Python 3.10+, standard library only · no runtime
+dependency in governed repos
+
+</div>
 
 > **Bixi** (赑屃) is the dragon-turtle of Chinese myth, who carries stone
 > steles — durable inscriptions — on his back for eternity.
-
-Bixi carries the durable record for a repository worked on by LLM coding
-agents, so nothing drifts.
 
 ## The problem
 
@@ -29,9 +37,6 @@ agent reads before it touches anything.
   (a compaction re-ground and a blocking pre-edit deny that protects the
   governance files). Shipped only where the mechanism is verified to work on
   that harness, never on assumption.
-
-Governed repos inherit no runtime dependency: it's Markdown plus one JSON
-settings file.
 
 ## Start a new project
 

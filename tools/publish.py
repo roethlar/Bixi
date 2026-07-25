@@ -2,7 +2,7 @@
 """publish: release the toolkit to the clean public product repo.
 
 Copies the publish set — whole paths, no lists (owner ruling 2026-07-23):
-tools/, templates/, procedures/, and the product README — from this
+tools/, templates/, procedures/, assets/, and the product README — from this
 development repo into the clean product-repo checkout, mirrors it exactly
 (stale files removed), makes one release commit, and pushes. The owner runs
 it directly; no git knowledge needed. The product repo path is given once
@@ -27,6 +27,9 @@ PUBLISH_PATHS = [
     ("templates", "templates"),
     ("procedures", "procedures"),
     ("product/README.md", "README.md"),
+    # The front page references these by relative path; mirroring clears the
+    # product repo first, so an unpublished asset is a broken image.
+    ("assets", "assets"),
 ]
 
 
