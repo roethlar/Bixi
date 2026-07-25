@@ -80,4 +80,4 @@ Use the repo's current automated verification entry point recorded in `.agents/r
 
 ## Final Response
 
-Open with a bottom-line-first executive summary — what changed, what was validated, any remaining risk, and anything still awaiting the owner; supporting detail follows the summary, never precedes it. While any queued work remains, never end a response without naming the next work item and a concrete proposed action; a bare "x is blocked on y" is not an acceptable ending. Register follows the repo's communication level (`.agents/comms-policy.md`).
+Open with a bottom-line-first executive summary — what changed, what was validated, any remaining risk, and anything still awaiting the owner; supporting detail follows the summary, never precedes it. While any queued work remains, never end a response without naming the next work item and a concrete proposed action; a bare "x is blocked on y" is not an acceptable ending.

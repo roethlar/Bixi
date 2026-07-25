@@ -31,7 +31,7 @@ only by at most one trailing final newline matches - a file touched by
 insert-final-newline tooling is not a divergence (issue #1).
 
 Repo-owned files (.agents/state.md, decisions.md, repo-guidance.md,
-push-policy.md, comms-policy.md, machines.md, plans, review trails,
+push-policy.md, machines.md, plans, review trails,
 archives) are never touched by reconcile — refresh's own mechanical
 repairs (recorded push-status lines, git-proven moved references,
 closed-decision archiving) are the only exception. The manifest's seeded[]
@@ -568,6 +568,10 @@ def check_committability(target_repo: Path, plan: Plan, shipped: dict) -> None:
         else:
             for lst in (plan.install, plan.update, plan.restore):
                 lst[:] = [(t, s) for t, s in lst if t != path]
+            # plan.seeded drives the counts, the commit summary and the ACTION
+            # line, so a skipped seed left there reports a file that was never
+            # written.
+            plan.seeded[:] = [t for t in plan.seeded if t != path]
             plan.flags.append((path, "ignored by '{}' ({}:{}) - unrecognized rule; skipped, never force-added".format(pattern, source, lineno)))
     # dedupe repairs (several paths may hit the same blanket line)
     plan.gitignore_repairs = sorted(set(
@@ -784,6 +788,75 @@ def stage(target_repo: Path, plan: Plan) -> None:
     paths = touched_paths(plan)
     if paths:
         git(target_repo, "add", "--", *paths)
+
+
+def governance_roots(shipped: dict) -> set:
+    """First path segment of every manifest target that lives in a
+    directory - the trees the toolkit owns (.agents, .claude, ...). A
+    top-level file target (AGENTS.md) contributes no tree. The prune sweep
+    never leaves these roots."""
+    roots = set()
+    for section in ("artifacts", "retired", "seeded"):
+        for entry in shipped.get(section, []):
+            parts = Path(entry.get("target", "")).parts
+            if len(parts) > 1:
+                roots.add(parts[0])
+    return roots
+
+
+def emptied_dirs(target_repo: Path, shipped: dict) -> list:
+    """Directories under the governance roots holding nothing at all,
+    deepest first. Read-only. Removing a retired target leaves its
+    directory behind and git cannot report it - it does not track
+    directories - so the litter survives every later run (observed after
+    the drift/harness-update retirement, 2026-07-24). The roots themselves
+    are never candidates: an empty `.agents/` is a repo's business, not
+    ours."""
+    removable = set()
+    found = []
+    for root in sorted(governance_roots(shipped)):
+        base = target_repo / root
+        if not base.is_dir():
+            continue
+        # Bottom-up, and a directory counts as empty when every entry it
+        # holds is itself already marked removable: a chain of empty
+        # directories collapses in one pass instead of one per run. Any
+        # file, or any entry that is not a removable directory (a symlink),
+        # disqualifies it.
+        for dirpath, _dirnames, _filenames in os.walk(str(base), topdown=False):
+            if Path(dirpath) == base:
+                continue
+            entries = os.listdir(dirpath)
+            if all(os.path.join(dirpath, e) in removable for e in entries):
+                removable.add(dirpath)
+                found.append(Path(dirpath).relative_to(target_repo).as_posix())
+    # Deepest first so a child is gone before its parent is attempted.
+    return sorted(found, key=lambda p: (-p.count("/"), p))
+
+
+def confirm_prune(count: int, input_fn=input) -> bool:
+    """One question, default yes; anything else declines. Callers gate on
+    isatty - never reached non-interactively."""
+    try:
+        answer = input_fn(
+            "Remove {} empty director{} left by retired files? [Y/n] ".format(
+                count, "y" if count == 1 else "ies")).strip().lower()
+    except EOFError:
+        return False
+    return answer in ("", "y", "yes")
+
+
+def prune_dirs(target_repo: Path, dirs: list) -> list:
+    """rmdir each, deepest first; a directory that stopped being empty
+    (racing writer) is skipped, never forced."""
+    pruned = []
+    for rel in dirs:
+        try:
+            (target_repo / rel).rmdir()
+        except OSError:
+            continue
+        pruned.append(rel)
+    return pruned
 
 
 # Harness detection is a PATH probe, never a gate (owner ruling 2026-07-23):
@@ -1082,17 +1155,6 @@ def main(argv=None) -> int:
             print("refresh: {} is empty or malformed; fix the push policy before refreshing".format(policy_path), file=sys.stderr)
             return 4
         policy_line = policy_lines[-1]
-    comms_path = target / ".agents" / "comms-policy.md"
-    if comms_path.exists():
-        first = comms_path.read_text(encoding="utf-8").splitlines()
-        marker = re.match(r"^<!--\s*comms-level:\s*[1-5]\s*-->\s*$",
-                          first[0] if first else "")
-        if not marker:
-            print("refresh: {} must open with a `<!-- comms-level: N -->` marker "
-                  "(N 1-5); fix the communication policy before refreshing".format(comms_path),
-                  file=sys.stderr)
-            return 4
-
     sync_note = ""
     if not args.no_sync:
         head_before = git(toolkit, "rev-parse", "HEAD").stdout.strip()
@@ -1228,6 +1290,22 @@ def main(argv=None) -> int:
                    for sd in shipped.get("seeded", [])}
         for t in plan.seeded:
             print("  ACTION: {} {}".format(t, actions.get(t, "seeded (repo-owned from now on).")))
+
+    # Final cleanup: retiring the last file in a directory leaves the
+    # directory behind, invisible to git. Ask once before removing any of
+    # them (owner ruling 2026-07-25); automated runs report and remove
+    # nothing. Nothing here is staged or committed - an empty directory is
+    # untracked by definition, so this can never touch the plan record.
+    stale_dirs = emptied_dirs(target, shipped)
+    if stale_dirs:
+        for d in stale_dirs:
+            print("  empty: {}".format(d))
+        interactive = sys.stdin.isatty() and sys.stdout.isatty() and not args.no_remediate
+        if interactive and confirm_prune(len(stale_dirs)):
+            for d in prune_dirs(target, stale_dirs):
+                print("  pruned: {}".format(d))
+        else:
+            print("  (left in place; nothing was removed)")
     findings = lint_governance(target)
     warns = [(rel, msg, kind) for rel, msg, kind in findings if kind != "note"]
     for rel, msg, kind in findings:

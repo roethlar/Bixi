@@ -20,6 +20,3 @@
 ## Earned Practices
 <!-- Repo-specific working rules earned by real incidents, in generalized
      wording a future agent can apply without chat context. -->
-<!-- Owner-communication level is not a section here: it is tuned per repo
-     in .agents/comms-policy.md, seeded at bootstrap like the push policy
-     (a 1-5 level behind a machine-readable marker line). -->

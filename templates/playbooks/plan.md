@@ -11,8 +11,7 @@ free of chat or session references that need the originating conversation
 to make sense. The owner does not read plan documents.
 
 **Owner decisions come in chat, one at a time, never a batch** — each
-stating the problem, the change, and the cost or risk, styled to the
-repo's communication level (`.agents/comms-policy.md`). Silence
+stating the problem, the change, and the cost or risk. Silence
 authorizes nothing: each decision waits for its own go.
 
 **Record the owner's approved wording durably** (the decisions log, the

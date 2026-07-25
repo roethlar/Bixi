@@ -70,7 +70,8 @@
     "831faf0f3173ad02a6d8ef8d66a8f850bd775c509a970235fffdb2151efc463c",
     "126070504b11a2771f70f125c8dbe385d64b716aaf313859acfa28844ab7c6f4",
     "7890d3cf59caba1a705d1f59868d4eb8b85c61f6f9ccc659daa02c67543cee6c",
-    "6cf8f0a2208840d0066ef19647f0276c4936924fc67c784df8a161eff3b42c1d"
+    "6cf8f0a2208840d0066ef19647f0276c4936924fc67c784df8a161eff3b42c1d",
+    "f28dea5ca9f896295b44937ac070a99b3ef4e7f2190097e1c90181f6f89fd52f"
    ]
   },
   {
@@ -168,7 +169,9 @@
     "276c912072cb2e51de7dd0765dabee7b917150329f761d7d6f23ab514feb14e2",
     "3309887734ea9f05a9dd7d4547a97deda1274a2889b3e9a1db5663a1a27e9de1",
     "925268ef9e7ea2d962dc7edfd5180daa01675b323a2fb205801d9cc0cbc5ca36",
-    "16cf92985caea5c2b82a05a970eaf53788494bdcb624587ac236c8e545331b2c"
+    "16cf92985caea5c2b82a05a970eaf53788494bdcb624587ac236c8e545331b2c",
+    "22f4dae92296eaaeaf8ee4a8ef4b66f37f524184343f30434026821388427ef4",
+    "3f4b8c4c81106f96925b99f4a6e10ee2ffbd226db48567d23f8df611caacedcd"
    ]
   },
   {
@@ -183,7 +186,8 @@
     "49d5faf163d9078bc6b15ef4c5014db0ff1052383de2827027da9d344aa3e968",
     "8fe95e3cf95da9399fe7ef99d386315913657bbc05d0796f065e7f2b3328e166",
     "aedfcc750e54780715080cc4b9d42fb990a150ec5363eebdce494f0bc5b0eb07",
-    "53c1ba9345398884708672ab5df351d4eed18a1617558d3ae76453b6f803669f"
+    "53c1ba9345398884708672ab5df351d4eed18a1617558d3ae76453b6f803669f",
+    "aa2ec0aab2a4f265424614c13318e4d03ffedde873c48b24f23818603c4ae324"
    ]
   },
   {
@@ -369,7 +373,9 @@
    "source": "templates/playbooks/plan.md",
    "target": ".agents/playbooks/plan.md",
    "class": "replace",
-   "formerly": []
+   "formerly": [
+    "af885ab545c95e4f1d6f287b4c8ba92dcee5a3ff5259370dbba97630c9f0d759"
+   ]
   },
   {
    "source": "templates/commands/claude/toolkit.md",
@@ -501,14 +507,16 @@
     "4b8502530773291ab1af4e6474a109627e15b5f5e7ea91cac17838083da5a3fb",
     "f2dd9fd38c3e23f638edf2949f3943c835934486c2c9a9379ff4ae342f298c4d"
    ]
+  },
+  {
+   "target": ".agents/comms-policy.md",
+   "comment": "Retired 2026-07-25 (owner ruling): the owner-communication level is retired outright - it was set per repo and never governed a response, because AGENTS.md carried a pointer to a file nothing loads. Repo-owned rather than shipped, so formerly[] carries the one version templates/comms-policy.template.md ever had: a repo still on the default level matches and is removed cleanly, while a repo whose owner changed the level does not and is removed with a DRIFT report naming the introducing commits. Both stay recoverable from git history, and the dirty-tree refusal protects uncommitted edits. Without this entry the file would survive every future refresh as governance litter pointing at a mechanism that no longer exists.",
+   "formerly": [
+    "3a15f819064c08db272445409630c8aaf3cf4556ea8d4811cb3ef848a07d473e"
+   ]
   }
  ],
  "seeded": [
-  {
-   "source": "templates/comms-policy.template.md",
-   "target": ".agents/comms-policy.md",
-   "action": "seeded at the default (level 3 - normal). Set this repo's level by editing the marker line; refresh never touches this file again."
-  },
   {
    "source": "templates/push-policy.template.md",
    "target": ".agents/push-policy.md",

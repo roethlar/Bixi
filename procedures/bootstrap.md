@@ -171,10 +171,7 @@ intact.
 4. `.agents/push-policy.md` from `templates/push-policy.template.md`
    (default `ask`). The approval summary asks the owner to choose; never
    pre-fill the choice from context.
-5. `.agents/comms-policy.md` from `templates/comms-policy.template.md`
-   (default level 3 — normal user). The approval summary asks the owner to
-   choose the communication level; never pre-fill the choice from context.
-6. Only if this repo's governance contains rules earned from real, citable
+5. Only if this repo's governance contains rules earned from real, citable
    incidents that other repos would benefit from: draft the harvest note for
    the feedback step (Step 8) — expected outcome is NO report, hard cap of
    three ideas, never a "nothing found" file.

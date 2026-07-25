@@ -95,18 +95,21 @@ session, by probing — the same thing a capable agent already does when a human
    (`<agent> exec --help`, `<agent> chat --help`, whichever the top level lists) to
    find the non-interactive flag and how to pass a prompt. Note the harness's JSON
    output flag here too (e.g. `--output-format json`) — the verdict contract uses it.
-3. **Capability smoke-test — through the real child path.** A probe that only
-   proves the process launches is what cost issue #6: a bare `<agent> exec "say
-   OK"` returned while the reviewer child could not read the repo or run the
-   guard, and 291 request variants chased one missing capability with no verdict.
-   So run the candidate incantation **with the same self-permissioning launch
-   grant the real review carries** (see "Self-permissioning launch") and make the
-   child prove, in that one shot, the two capabilities the review actually
-   depends on: **read a repo file** (e.g. print a line of a known committed file)
-   and **run one allowlisted command** (e.g. the verification command, or a
-   trivial `git` invocation from the grant) — then echo a token that appears only
-   if both succeeded. A probe that skips either capability, or that runs outside
-   the real grant, does not qualify the transport. Keep the usual bounds: a
+3. **Capability proof — carried by the real dispatch, not a separate round.**
+   A probe that only proves the process launches is what cost issue #6: a bare
+   `<agent> exec "say OK"` returned while the reviewer child could not read the
+   repo or run the guard, and 291 request variants chased one missing
+   capability with no verdict. The proof required is therefore that the child
+   demonstrates, in one shot and under the real self-permissioning grant (see
+   "Self-permissioning launch"), the two capabilities the review depends on:
+   **read a repo file** and **run one allowlisted command**. Fold that proof
+   into the review dispatch itself — the reviewer echoes a `capability_ok`
+   token in its verdict envelope, absent unless both succeeded — rather than
+   paying a separate round-trip for it. A real review exercises those
+   capabilities by definition, so a missing token means the transport failed
+   and the run is not a clean pass (see the verdict contract). Dispatch a
+   standalone smoke prompt only when qualifying a transport with no review to
+   run. Keep the usual bounds: a
    **timeout** (a hung process is a failed probe, not a wait); **non-interactive
    detection** (if it opens a TUI / alternate screen / waits on a TTY, the
    incantation is wrong — try the next candidate); and run it **from the real git
@@ -138,35 +141,42 @@ probing," so a stale cache self-corrects on the next smoke test.
 
 For **tier routing** the cache is load-bearing, not optional: it is the only
 place tier→(model, effort) defaults live — committed text pins no models.
-Each harness entry is keyed by harness version and additionally
-carries:
+
+**Two halves, keyed differently — this is load-bearing.** The *incantation*
+(transport, headless entry, flags) is version-sensitive: flags move between
+releases, so it is keyed by harness version and re-probed automatically when
+the version changes. Nobody is asked. The *tier→pair mapping* is an owner
+judgment about models, which live server-side and do not change because a CLI
+released a point version; it carries **no version key** and survives upgrades
+untouched. Conflating the two turns every routine harness upgrade into an
+interrogation, which is the failure this split exists to prevent.
 
 ```json
 "transport": "mcp | cli",
+"probed": "<harness version>",
 "tiers": {
-  "standard": {"model": "<id>", "effort": "<level>", "flags": ["..."],
-               "confirmed": "<harness version>"},
+  "standard": {"model": "<id>", "effort": "<level>", "flags": ["..."]},
   "frontier": {"model": "<id>", "effort": "<level>", "flags": ["..."],
-               "confirmed": "<harness version>",
-               "grade": "competitive | fallback",
-               "openreview_confirmed": "<harness version | null>"}
+               "grade": "competitive | fallback"}
 }
 ```
 
 The probe additionally discovers the model-selection and effort flags and
 verifies the named model resolves. Tier pairs are **recorded when the owner
 names or accepts them** — there is no confirmation ritual: a tier with no
-recorded pair asks the owner once, and the answer is recorded (`grade` is
-owner-declared, frontier-only). An owner's dispatch-time `<model>` word
-always overrides the recorded pair for that dispatch, without rewriting it.
-`openreview_confirmed` records that the owner has also named or accepted
-the pair's use by the `openreview` playbook at its ruled effort (OR3,
-owner-adjudicated 2026-07-18): a frontier pair the owner declared
-fallback-grade is fallback for **both** playbooks — the naming is
-per pair, not per playbook — so the field is set at the same
-moment, never inferred later. `null` means the owner has
-not named the pair for openreview and that cell asks the owner before
-dispatching there. A
+recorded pair at all asks the owner once, and the answer is recorded
+(`grade` is owner-declared, frontier-only). An owner's dispatch-time
+`<model>` word always overrides the recorded pair for that dispatch, without
+rewriting it.
+
+**A recorded pair never blocks a dispatch.** Where the recorded pair is
+usable, it is used: a harness-version change, a re-probed incantation, or any
+other environment shift is a **note on the dispatch record**, never a gate —
+the same rule the "Dispatch grammar" section already applies to hooks,
+wrappers, and proxies. Review validity comes from the review; a confirmation
+ritual standing between the owner and a verdict buys nothing the provenance
+line does not already carry. Only a genuinely absent pair, or a harness that
+rejects the model at dispatch, stops and asks. A
 single-model harness may still differentiate tiers by effort; only when both
 pairs are genuinely identical does it record the same pair under both tiers,
 explicitly. `transport` is `mcp` where a verified MCP registration exists for
@@ -251,7 +261,7 @@ there is no third role: no economy/cheap-model role exists for any review
 work — cheapness comes from routing, not from a weaker tier.
 
 A tier resolves to its (model ID, effort flags) pair at invocation time,
-from the version-keyed machine-local cache (see "Deriving the reviewer
+from the machine-local cache (see "Deriving the reviewer
 incantation"); each tier→pair mapping is recorded when the owner names or
 accepts it. A dispatch whose tier has no recorded pair asks the owner once and
 records the answer — nothing guesses, and nothing else blocks: an explicit
@@ -383,6 +393,7 @@ see the gate below):
    the JSON envelope. Its result payload must match:
    ```json
    {"verdict":"accepted|reopened|invalid","guard_confirmed":true,
+    "capability_ok":true,
     "reviewed_sha":"<head-sha>","base_sha":"<base-sha>","comments":["file:line — …"]}
    ```
    Parse the envelope's result field against this schema. **The orchestrator — never
@@ -390,7 +401,12 @@ see the gate below):
    checks, not the decision. **Fail closed:** any of {non-zero exit, missing/!valid
    JSON envelope, payload not matching the schema, `verdict` not in the enum,
    `reviewed_sha` ≠ the dispatched head SHA, `base_sha` ≠ the dispatched base SHA,
-   `guard_confirmed` not literally `true`} → the outcome is **not accepted**.
+   `guard_confirmed` not literally `true`, `capability_ok` not literally `true`}
+   → the outcome is **not accepted**. `capability_ok` is the folded-in transport
+   proof (see "Capability proof"): the reviewer sets it only after reading a repo
+   file and running one allowlisted command in the same shot, so its absence means
+   the child never had the capabilities the review depends on — exactly the issue
+   #6 failure mode, which the standalone smoke round used to catch.
    **Extraction before rejection:** a prose-wrapped payload is not a parse miss —
    scan it for candidate JSON objects, and when exactly one matches the schema, use
    it; the review already happened, and surrounding prose is never an input to

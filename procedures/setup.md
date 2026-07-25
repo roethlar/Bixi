@@ -31,8 +31,8 @@ yet; the repo will accumulate truth as work happens.
 
 Draft these from their templates (`templates/state.template.md`,
 `templates/decisions.template.md`, `templates/repo-guidance.template.md`,
-`templates/push-policy.template.md`, `templates/comms-policy.template.md` in
-the toolkit) into `.agents/`, keeping each file short:
+`templates/push-policy.template.md` in the toolkit) into `.agents/`, keeping
+each file short:
 
 - `.agents/repo-guidance.md` — the project summary from Step 1, the reading
   order, and a Verification section. If no verification command can exist
@@ -41,30 +41,24 @@ the toolkit) into `.agents/`, keeping each file short:
 - `.agents/state.md` — `## Now`: project just created by new-project, setup
   in progress. `## Next`: the first real work item from Step 1.
 - `.agents/decisions.md` — the stock header; no entries yet.
-- `.agents/push-policy.md` and `.agents/comms-policy.md` — seeded at the
-  defaults; Step 3 sets their markers from the owner's answers.
+- `.agents/push-policy.md` — seeded at the default; Step 3 sets its marker
+  from the owner's answer.
 
-## Step 3 — The two config questions
+## Step 3 — The config question
 
-Ask both, one at a time, never pre-selected (the owner's reply is the only
-valid source):
+Ask it, never pre-selected (the owner's reply is the only valid source):
 
-1. **Push policy** — present the four standardized options with the default
-   marked: 1 `always`, 2 `operators`, 3 `docs`, 4 `ask` (default). Set the
-   `<!-- push-policy: N -->` marker line in `.agents/push-policy.md` to the
-   owner's choice.
-2. **Communication level** — present the five levels with the default
-   marked: 1 ELI5, 2 plain English one decision at a time, 3 normal user
-   (default), 4 devops shorthand, 5 devops/jargon terse. Set the
-   `<!-- comms-level: N -->` marker line in `.agents/comms-policy.md`
-   accordingly.
+**Push policy** — present the four standardized options with the default
+marked: 1 `always`, 2 `operators`, 3 `docs`, 4 `ask` (default). Set the
+`<!-- push-policy: N -->` marker line in `.agents/push-policy.md` to the
+owner's choice.
 
 ## Step 4 — One scoped commit
 
-Commit the staged shipped set **plus** the five judgment drafts as ONE
+Commit the staged shipped set **plus** the four judgment drafts as ONE
 scoped commit: `git add` exactly those paths (never `git add -A`, never
 `git add -f`). Suggested message: "new-project: governance install +
-judgment files (push-policy: N, comms-level: N)". Push per the push policy
+judgment files (push-policy: N)". Push per the push policy
 the owner just chose (default `ask`: ask once, name the remotes — a fresh
 repo may have none; offer to add one, do not configure one unasked).
 

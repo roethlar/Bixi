@@ -16,7 +16,7 @@ Every governed repo gets the same two-layer setup:
   and the operator playbooks (the shipped set is enumerated in
   `tools/shipped-set.json`, this repo's manifest).
 
-Plus harness adapters (shims like `CLAUDE.md`/`GEMINI.md`, operator command
+Plus harness adapters (the `CLAUDE.md` shim, operator command
 wrappers, and two hooks — the Claude Code compaction re-ground and the
 blocking protect-governance pre-edit deny), shipped only where the mechanism
 is verified to work (`docs/harness-capabilities.md`).
