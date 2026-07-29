@@ -95,8 +95,7 @@ next time you work in it.
 
 ## Development
 
-Bixi is the released toolkit. It's developed in
-[AgentGovernanceBootstrap](https://github.com/roethlar/AgentGovernanceBootstrap),
-where the design notes, the per-harness verification record, and the full
-decision log live. File issues
-[there](https://github.com/roethlar/AgentGovernanceBootstrap/issues).
+Bixi is the released toolkit; development happens in a separate working
+repository. File issues [here](https://github.com/roethlar/Bixi/issues) —
+reports are consumed in the development repo, and fixes arrive in the
+next Bixi release.

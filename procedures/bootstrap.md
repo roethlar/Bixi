@@ -37,28 +37,35 @@ Three rules govern everything you show and do here:
 
 ## Step 0: Sync this toolkit
 
-The canonical copy of this process lives on GitHub
-(`https://github.com/roethlar/AgentGovernanceBootstrap.git`); the LAN gitea
-remote (`http://q:3000/michael/AgentGovernanceBootstrap.git`) is the
-owner-controlled mirror — a trusted fetch source whose purpose is covering
-GitHub being unreachable. It may lag GitHub; lag is expected, never a
-conflict. Canon propagates only via pushes to GitHub.
+The canonical public home of this toolkit is Bixi
+(`https://github.com/roethlar/Bixi.git`). A toolkit clone syncs from its
+own `origin` first: a product clone from Bixi, the development clone from
+the development repo
+(`https://github.com/roethlar/AgentGovernanceBootstrap.git`), whose
+owner-controlled LAN gitea mirror
+(`http://q:3000/michael/AgentGovernanceBootstrap.git`) is a trusted fetch
+source covering GitHub being unreachable. The mirror may lag; lag is
+expected, never a conflict. Canon propagates only via pushes to the
+clone's GitHub home.
 
 Sync the local toolkit clone (the directory containing this `procedures/`
-folder; normally `~/dev/AgentGovernanceBootstrap`) before anything else. Run
+folder; normally `~/dev/Bixi`) before anything else. Run
 every command as `git -C <toolkit> ...` — many harnesses reset cwd between
 tool calls, and a bare `git fetch` after a separate `cd` silently hits the
 wrong repo.
 
 1. A remote "responds" when `git ls-remote --exit-code <url> HEAD` exits 0.
    Fetch from a responding remote; fast-forward (`merge --ff-only`) to
-   GitHub's head when GitHub responded, to gitea's only when GitHub did not.
+   `origin`'s head when `origin` responded, otherwise to the first
+   responding fallback in `tools/refresh.py`'s canonical order (Bixi, then
+   the development repo, then the LAN mirror).
 2. If no remote responds or fast-forward is impossible: proceed on the local
-   copy and flag that in plain English in the approval summary. A gitea head
-   behind GitHub's is an expected lagging mirror, not a conflict. Never merge
-   or rebase the toolkit; never block the owner on freshness.
-3. If no local toolkit clone exists on this machine, clone it from either
-   URL to `~/dev/AgentGovernanceBootstrap` first.
+   copy and flag that in plain English in the approval summary. A mirror
+   head behind its GitHub home is an expected lagging mirror, not a
+   conflict. Never merge or rebase the toolkit; never block the owner on
+   freshness.
+3. If no local toolkit clone exists on this machine, clone
+   `https://github.com/roethlar/Bixi.git` to `~/dev/Bixi` first.
 4. If the sync updated this file, re-read it before continuing.
 
 This sync is the ONE sanctioned write to the toolkit repo from a session in
@@ -266,11 +273,12 @@ Both routes, then:
 1. If this run confirmed a defect in this toolkit (its code or procedures),
    or surfaced a governance rule earned from a real citable incident that
    other repos would benefit from: draft a GitHub issue body from the
-   matching template under the toolkit's `.github/ISSUE_TEMPLATE/`, present
+   matching template under the toolkit's `.github/ISSUE_TEMPLATE/` (where
+   present; else a plain body), present
    it to the owner — **including a redaction check: no secrets, tokens,
    credentials, private hostnames/IPs, or personal data; cite evidence by
    repo-relative path and commit hash** — and file it with
-   `gh issue create -R roethlar/AgentGovernanceBootstrap` only on an
+   `gh issue create -R roethlar/Bixi` only on an
    explicit owner go. Offline or no go: leave the drafted body as a note in
    this repo's `.agents/` and say so.
 2. Do not raise deleting `.bootstrap-tmp/` until approved files are copied
