@@ -37,6 +37,11 @@ PUBLISH_PATHS = [
     # The front page references these by relative path; mirroring clears the
     # product repo first, so an unpublished asset is a broken image.
     ("assets", "assets"),
+    # The 2026-07-29 decision routes product feedback to Bixi's issues; the
+    # templates carry the filing discipline (proof before filing, redaction,
+    # one defect per issue). The subdirectory ships deliberately — never all
+    # of .github/ — so development-only CI or workflows can never auto-ship.
+    (".github/ISSUE_TEMPLATE", ".github/ISSUE_TEMPLATE"),
 ]
 
 
