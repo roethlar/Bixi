@@ -4,8 +4,11 @@
 Copies the publish set — whole paths, no lists (owner ruling 2026-07-23):
 tools/, templates/, procedures/, assets/, and the product README — from this
 development repo into the clean product-repo checkout, mirrors it exactly
-(stale files removed), makes one release commit, and pushes. The owner runs
-it directly; no git knowledge needed. The product repo path is given once
+(stale files removed), makes one release commit, and pushes. A checkout
+that has fallen behind its remote (releases publish from other machines
+too) is brought up to date first; histories that have truly split refuse
+before anything is touched. The owner runs it directly; no git knowledge
+needed. The product repo path is given once
 (`publish <path>`) and recorded in .agents/machines.md for later runs.
 
 Each entry maps a development-repo source to its product-repo target. The
@@ -94,6 +97,35 @@ def main(argv=None) -> int:
               "to run over them:", file=sys.stderr)
         print(dirty, file=sys.stderr)
         return 2
+
+    # Freshness: releases land on the remote from other machines too. A
+    # stale checkout would mirror onto old history and the final push would
+    # be refused, so bring it up to date first; an unreachable remote is a
+    # caveat, never a block.
+    if git(product, "remote", check=False).stdout.split():
+        if git(product, "fetch", "-q", check=False).returncode != 0:
+            print("publish: could not reach the product repo's remote to "
+                  "check freshness; releasing from the checkout as it "
+                  "stands.", file=sys.stderr)
+        elif git(product, "rev-parse", "--abbrev-ref", "@{upstream}",
+                 check=False).returncode == 0:
+            behind = git(product, "merge-base", "--is-ancestor",
+                         "HEAD", "@{upstream}", check=False).returncode == 0
+            ahead = git(product, "merge-base", "--is-ancestor",
+                        "@{upstream}", "HEAD", check=False).returncode == 0
+            if not behind and not ahead:
+                print("publish: the product checkout and its remote each "
+                      "have releases the other lacks — separate histories. "
+                      "Ask an agent to reconcile {}, then publish again."
+                      .format(product), file=sys.stderr)
+                return 2
+            if behind and not ahead and git(
+                    product, "merge", "--ff-only", "-q", "@{upstream}",
+                    check=False).returncode != 0:
+                print("publish: could not bring the product checkout up to "
+                      "date with its remote. Ask an agent to reconcile {}, "
+                      "then publish again.".format(product), file=sys.stderr)
+                return 2
 
     # Preflight the whole publish set BEFORE touching the product repo:
     # every refusal above and below this point leaves it byte-identical.
