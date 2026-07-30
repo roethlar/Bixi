@@ -30,6 +30,10 @@ PUBLISH_PATHS = [
     ("templates", "templates"),
     ("procedures", "procedures"),
     ("product/README.md", "README.md"),
+    # Mirroring clears the product repo, so its license ships from here;
+    # a public repo without one grants no rights. One canonical copy at
+    # this repo's root covers both repos (2026-07-30 MIT decision).
+    ("LICENSE", "LICENSE"),
     # Ships for the same reason as the README: mirroring clears the product
     # repo, and without it OS junk lands untracked and blocks the next
     # release through the dirty-tree refusal.
