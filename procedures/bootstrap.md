@@ -197,8 +197,12 @@ First generate the machine plan:
 `<probed-python> <toolkit>/tools/refresh.py --plan-json .bootstrap-tmp/refresh-plan.json <repo>`
 — a read-only run that records exactly what refresh will install, update,
 remove, and stage, pinned to the toolkit commit, manifest digest, and
-target HEAD. The summary's shipped-set list is rendered FROM that record,
-never reconstructed by hand.
+target HEAD. It also lists `already_staged`: shipped files sitting in the
+index from an earlier `--stage-only` run, which refresh will not write but
+the commit will contain (the `new-project` handoff always looks like this).
+The summary's shipped-set list is rendered FROM that record — the union of
+`installs`, `updates`, `restores` and `already_staged`, with the
+already-staged paths marked as such — never reconstructed by hand.
 
 Write `.bootstrap-tmp/drafts/approval-summary.md` from
 `templates/approval-summary.template.md`. It starts with `Approve`,
@@ -227,7 +231,9 @@ shape and nothing else.
    summary if it does); it then installs and stages the shipped set
    (repairing a known blanket harness-dir ignore itself, flagging anything
    unexpected — surface every FLAG line to the owner). Stage the copied
-   judgment drafts.
+   judgment drafts. Paths the record listed under `already_staged` are
+   already in the index: apply writes nothing for them, and the commit
+   below still covers them.
 3. Make ONE scoped commit covering both groups — `git add` exactly the
    approved files, never `git add -A` — using the commit message the summary
    announced. The owner's approval covers this single commit; after an

@@ -59,11 +59,14 @@ enter the commit and must not be listed as committed.>
 
 ### Committed — shipped set (installed by `tools/refresh.py --stage-only`)
 
-<List what the refresh script will install here, rendered from the
-`--plan-json` record this run generated (`AGENTS.md`, harness shims,
+<List everything the commit will contain from the shipped set, rendered from
+the `--plan-json` record this run generated (`AGENTS.md`, harness shims,
 operator wrappers, playbooks, hook settings) — never reconstructed by hand.
-These files are never drafted or hand-copied; the script is their single
-installer, and Step 7 applies exactly this record.>
+That is the record's `installs`, `updates` and `restores`, plus its
+`already_staged` paths, which an earlier `--stage-only` run put in the index
+and the script will not rewrite; mark those "already staged". These files are
+never drafted or hand-copied; the script is their single installer, and Step 7
+applies exactly this record.>
 
 ### Local-only (gitignored, copied but never committed)
 
