@@ -54,24 +54,53 @@ def git(repo: Path, *args, check=True):
                           capture_output=True, text=True, check=check)
 
 
+# A recorded path is one bare token, or - when it contains whitespace - a
+# quoted string. Reader and writer share this shape: parsing to the first
+# space truncated `C:\My Projects\Bixi` to `C:\My`, which resolved to the
+# wrong checkout (or none) and never matched itself for the duplicate check.
+_RECORDED = r'product-repo:\s*(?:"([^"]*)"|(\S+))'
+
+
+def _recorded_paths(text: str) -> list:
+    import re
+    return [Path(quoted or bare).expanduser()
+            for quoted, bare in re.findall(_RECORDED, text)]
+
+
+def _record_line(product: Path, today: str) -> str:
+    shown = str(product)
+    if any(c.isspace() for c in shown):
+        shown = '"{}"'.format(shown)
+    return "- product-repo: {} (recorded {}, first publish)\n".format(
+        shown, today)
+
+
 def recorded_product_repo(dev_repo: Path) -> "Path | None":
     machines = dev_repo / ".agents" / "machines.md"
     if not machines.exists():
         return None
-    import re
-    m = re.search(r"product-repo:\s*(\S+)",
-                  machines.read_text(encoding="utf-8", errors="replace"))
-    return Path(m.group(1)).expanduser() if m else None
+    found = _recorded_paths(
+        machines.read_text(encoding="utf-8", errors="replace"))
+    return found[0] if found else None
 
 
 def record_product_repo(dev_repo: Path, product: Path) -> None:
     import datetime
+    import os
     machines = dev_repo / ".agents" / "machines.md"
     machines.parent.mkdir(parents=True, exist_ok=True)
     text = (machines.read_text(encoding="utf-8")
             if machines.exists() else "# Machines\n")
-    line = "- product-repo: {} (recorded {}, first publish)\n".format(
-        product, datetime.date.today().isoformat())
+    # Recording is idempotent: a path this file already names stays recorded
+    # once. The lookup above reads the first product-repo line in the file, so
+    # on any machine whose entry is not that first one the path is passed on
+    # every run - and appending each time grows the file by a line per release.
+    def key(p):
+        return os.path.normcase(str(p))
+
+    if key(product) in {key(p) for p in _recorded_paths(text)}:
+        return
+    line = _record_line(product, datetime.date.today().isoformat())
     if not text.endswith("\n"):
         text += "\n"
     machines.write_text(text + line, encoding="utf-8")
