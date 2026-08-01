@@ -977,6 +977,145 @@ def record_harness_cli(target_repo: Path, name: str) -> None:
         pass
 
 
+CODEX_HOOKS_TARGET = ".codex/hooks.json"
+
+
+def codex_trust_pin(target_repo: Path, codex_argv, confirm) -> str:
+    """Pin codex's per-handler hook trust for this repo through codex's own
+    app-server (`hooks/list` -> `config/batchWrite`): codex computes the
+    trust hash and writes its own config file, so this tool never parses or
+    edits the TOML (owner ruling 2026-08-01 - at-time approved, validated
+    write; agent judgment never touches the config). Returns one report
+    line. Fail-open throughout: any protocol surprise reports "skipped" -
+    the pin is optional hardening, and the codex TUI surfaces untrusted
+    hooks itself at the next interactive launch."""
+    import queue
+    import threading
+    import time
+    try:
+        proc = subprocess.Popen(
+            list(codex_argv) + ["app-server"], stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            text=True, encoding="utf-8", bufsize=1)
+    except OSError as exc:
+        return "codex trust: skipped (app-server launch failed: {})".format(exc)
+    lines = queue.Queue()
+
+    def _reader():
+        try:
+            for line in proc.stdout:
+                lines.put(line)
+        except (OSError, ValueError):
+            pass
+        lines.put(None)
+
+    threading.Thread(target=_reader, daemon=True).start()
+
+    def send(obj):
+        proc.stdin.write(json.dumps(obj) + "\n")
+        proc.stdin.flush()
+
+    def wait_for(rid, seconds=30):
+        end = time.time() + seconds
+        while time.time() < end:
+            try:
+                line = lines.get(timeout=1)
+            except queue.Empty:
+                continue
+            if line is None:
+                return None
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                msg = json.loads(line)
+            except ValueError:
+                continue
+            if msg.get("id") == rid:
+                return msg
+        return None
+
+    try:
+        send({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+              "params": {"clientInfo": {
+                  "name": "governance-refresh",
+                  "title": "governance refresh", "version": "1"}}})
+        if wait_for(1) is None:
+            return "codex trust: skipped (no app-server handshake)"
+        send({"jsonrpc": "2.0", "method": "initialized"})
+        send({"jsonrpc": "2.0", "id": 2, "method": "hooks/list",
+              "params": {"cwds": [str(target_repo)]}})
+        reply = wait_for(2)
+        data = (reply or {}).get("result", {}).get("data") or []
+        hooks = data[0].get("hooks", []) if data else []
+        root = os.path.realpath(str(target_repo))
+        mine = [h for h in hooks
+                if os.path.realpath(str(h.get("sourcePath", ""))).startswith(root)
+                and h.get("trustStatus") in ("untrusted", "modified")]
+        if not mine:
+            return "codex trust: nothing untrusted for this repo"
+        for h in mine:
+            print("  codex hook: {} [{}]".format(h.get("key"),
+                                                 h.get("trustStatus")))
+        if not confirm("Pin trust for {} codex hook(s) now (codex writes "
+                       "its own config)? [y/N] ".format(len(mine))):
+            return "codex trust: not pinned (declined)"
+        state = {h["key"]: {"trusted_hash": h["currentHash"]} for h in mine}
+        send({"jsonrpc": "2.0", "id": 3, "method": "config/batchWrite",
+              "params": {"edits": [{"keyPath": "hooks.state", "value": state,
+                                    "mergeStrategy": "upsert"}],
+                         "filePath": None, "expectedVersion": None,
+                         "reloadUserConfig": True}})
+        reply = wait_for(3)
+        if ((reply or {}).get("result") or {}).get("status") != "ok":
+            return "codex trust: skipped (config write not confirmed)"
+        send({"jsonrpc": "2.0", "id": 4, "method": "hooks/list",
+              "params": {"cwds": [str(target_repo)]}})
+        reply = wait_for(4)
+        data = (reply or {}).get("result", {}).get("data") or []
+        after = {h.get("key"): h.get("trustStatus")
+                 for h in (data[0].get("hooks", []) if data else [])}
+        unverified = [k for k in state if after.get(k) != "trusted"]
+        if unverified:
+            return "codex trust: write did not verify for {}".format(
+                ", ".join(sorted(unverified)))
+        return "codex trust: pinned {} hook(s), verified trusted".format(
+            len(state))
+    finally:
+        try:
+            proc.stdin.close()
+        except OSError:
+            pass
+        proc.terminate()
+
+
+def offer_codex_hook_trust(target_repo: Path, plan: Plan,
+                           input_fn=input) -> None:
+    """After a run installs, updates, or restores the codex hook config,
+    offer the one-time trust pin - approval at install time, write executed
+    and validated by codex itself. Silent when codex is absent or the run
+    is non-interactive: the codex TUI surfaces untrusted hooks on its own
+    at the next interactive launch (owner ruling 2026-08-01: no printed
+    instructions)."""
+    touched = ({t for t, _ in plan.install} | {t for t, _ in plan.update}
+               | {t for t, _ in plan.restore})
+    if CODEX_HOOKS_TARGET not in touched:
+        return
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        return
+    codex = shutil.which("codex")
+    if not codex:
+        return
+
+    def confirm(prompt):
+        try:
+            return input_fn(prompt).strip().lower() in ("y", "yes")
+        except EOFError:
+            return False
+
+    print("  " + codex_trust_pin(target_repo, [codex], confirm))
+
+
 def core_flags(plan: Plan, shipped: dict) -> list:
     """Flag targets in the replace-whole (core file) class - the one flag
     category that is never a legitimate steady state."""
@@ -1371,6 +1510,11 @@ def main(argv=None) -> int:
                    for sd in shipped.get("seeded", [])}
         for t in plan.seeded:
             print("  ACTION: {} {}".format(t, actions.get(t, "seeded (repo-owned from now on).")))
+
+    # One-time codex hook trust, offered in the run that installs or
+    # changes .codex/hooks.json (a changed hook config invalidates codex's
+    # per-handler pin). Silent off-TTY and without codex on PATH.
+    offer_codex_hook_trust(target, plan)
 
     # Final cleanup: retiring the last file in a directory leaves the
     # directory behind, invisible to git. Ask once before removing any of

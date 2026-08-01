@@ -367,7 +367,10 @@
     "010f53e6ab8b3f1a62865e649e2aa7508a1c5a77f468fff3d52d5f961335c017",
     "45f3681bc06f6679d87f68136479997c2199a84eaa58e203ecd0303cd5de3778",
     "54ee3b5a5c055f019b567024057608681ea40de5c596309069511c4eea4be5e6",
-    "04512e137cb464c64559ae2a93ac7a279e1ab65623ea0f7a7e93937d71e6a88f"
+    "04512e137cb464c64559ae2a93ac7a279e1ab65623ea0f7a7e93937d71e6a88f",
+    "d05f6b4ed499045281341a99723454145cf5556f23c8438eb8197c0d651b1daa",
+    "ec3e0b5a9543c686a697475737d93119c6558aefaccedce37d84317e373ed9d0",
+    "2f108f66dd5ffb308b770aaa87f330c6a842eeacb260bb33e54d5ffce65e91b1"
    ]
   },
   {
@@ -417,6 +420,17 @@
    "formerly": [
     "ce026f9cc71ab0208afbec1b414b184c5836fc43b2cfcf0363633e49682b4789"
    ]
+  },
+  {
+   "source": "templates/hooks/codex/hooks.json",
+   "target": ".codex/hooks.json",
+   "class": "replace",
+   "formerly": [
+    "4173da747a86d191c119d5da7283a11b5aa5b317486a0067e0eef08134fd8d76",
+    "9895cbd9520b5a5989628c2d0eb3a74fd0bdfb99137da434843a2d93cc0bbf0e",
+    "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
+    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
+   ]
   }
  ],
  "retired": [
@@ -435,15 +449,6 @@
    "target": ".claude/agents-md-tripwire.py",
    "formerly": [
     "cdf2662f113d97b53ac8108d8a0a878bfcefb7ed6d86e22a8638f8d157bdeb4e"
-   ]
-  },
-  {
-   "target": ".codex/hooks.json",
-   "formerly": [
-    "4173da747a86d191c119d5da7283a11b5aa5b317486a0067e0eef08134fd8d76",
-    "9895cbd9520b5a5989628c2d0eb3a74fd0bdfb99137da434843a2d93cc0bbf0e",
-    "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
-    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
    ]
   },
   {
