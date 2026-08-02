@@ -370,7 +370,8 @@
     "04512e137cb464c64559ae2a93ac7a279e1ab65623ea0f7a7e93937d71e6a88f",
     "d05f6b4ed499045281341a99723454145cf5556f23c8438eb8197c0d651b1daa",
     "ec3e0b5a9543c686a697475737d93119c6558aefaccedce37d84317e373ed9d0",
-    "2f108f66dd5ffb308b770aaa87f330c6a842eeacb260bb33e54d5ffce65e91b1"
+    "2f108f66dd5ffb308b770aaa87f330c6a842eeacb260bb33e54d5ffce65e91b1",
+    "3542533a8369eef08e871344559ec615939fdc6c751cdeb482dcbe1ed84480a7"
    ]
   },
   {
@@ -389,7 +390,9 @@
    "source": "templates/playbooks/catchup.md",
    "target": ".agents/playbooks/catchup.md",
    "class": "replace",
-   "formerly": []
+   "formerly": [
+    "75a36fbf3f2523d697cf5d7260075058c140e82f7ed9f39f749213f6d5cf3028"
+   ]
   },
   {
    "source": "templates/playbooks/handoff.md",
@@ -430,6 +433,14 @@
     "9895cbd9520b5a5989628c2d0eb3a74fd0bdfb99137da434843a2d93cc0bbf0e",
     "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
     "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
+   ]
+  },
+  {
+   "source": "templates/playbooks/drift.md",
+   "target": ".agents/playbooks/drift.md",
+   "class": "replace",
+   "formerly": [
+    "a196a3f47a76700ce6d58b2cd53c89d90a00d08cc104e20094be236f3c96f08f"
    ]
   }
  ],
@@ -523,13 +534,6 @@
     "fad07c35ff6350ca359dc64b166296d6940e42d3ccea38d18035d449ded53519",
     "ecea437bc66f4bab0a4642390eb8afb9fc18679ec6f91455ff97e8b3b03a7c4d",
     "9ea6bab45687273d4cab10e179813169fd97e14bed07b6706c1830e316e4ce50"
-   ]
-  },
-  {
-   "target": ".agents/playbooks/drift.md",
-   "comment": "Retired 2026-07-23 (owner ruling, owner-surface D4): the `drift` owner word is retired; its state-hygiene sweep rides `catchup` (templates/playbooks/catchup.md) and its compare-against-evidence skill stays agent-level. formerly[] carries past shipped hashes plus the outgoing version's nhash so deployed copies are cleanly removed.",
-   "formerly": [
-    "a196a3f47a76700ce6d58b2cd53c89d90a00d08cc104e20094be236f3c96f08f"
    ]
   },
   {
