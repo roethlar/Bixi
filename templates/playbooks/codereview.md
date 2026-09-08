@@ -33,8 +33,8 @@ A bare `codereview` asks which reviewer to run in one line, with prior
 harness/model dispatches from the machine-local cache as recall. That list
 is a reminder, never a menu. Probe nothing to build it; an empty cache asks
 without a list. Do not store the answer as a bare-invocation default.
-The owner's choice may be the coder's own model; provenance makes that
-visible, and no claim of independence may exceed what actually ran.
+Reviewer selection never authorizes self-review; AGENTS.md governs that
+exception.
 
 ## Deriving the reviewer incantation
 
@@ -81,19 +81,17 @@ dispatch notes, not confirmation gates.
 
 ### Self-permissioning launch
 
-The orchestrator prepares a disposable, detached `git worktree` at the
-pinned head and supplies its path. The reviewer inspects that snapshot and
-runs all verification and revert/restore proofs there, never in the coder's
-working tree. Remove only that disposable worktree after capturing results.
+Grant tools at launch, never by widening persistent settings: file
+reads/searches, named Git inspection and worktree commands, the exact
+verification command, and proof edits in the reviewer's disposable worktree
+at the pinned head. The reviewer creates that worktree for revert/restore
+proofs; read-only inspection needs none. Never run proof edits in the coder's
+working tree.
 
-Grant the required tools at launch, never by widening persistent settings:
-file reads/searches, named read-only Git commands for the pinned range,
-the exact verification command, and reversible proof edits confined to
-the disposable worktree. Do not grant a wildcard Git or shell permission.
-The reviewer gets no commit, push, ref-changing, or network-mutation
-authority. Worktrees share Git metadata; file isolation is not permission
-isolation. Verify the transport can enforce the grant; if it cannot,
-report it unsupported instead of broadening permissions.
+Do not grant wildcard Git or shell permission. Beyond that worktree
+lifecycle, grant no commit, push, ref-changing, or network-mutation
+authority. Worktrees share Git metadata; isolation does not widen authority.
+If the transport cannot enforce the grant, report it unsupported.
 
 ### Dispatch provenance
 
@@ -171,10 +169,10 @@ record the outcome as contested and route it to the owner.
 ## Change review (defect generation)
 
 Resolve both endpoints of `<base>..<head>` to SHAs. Supply those pins,
-the disposable worktree, the bounded defect-hunt mandate and this schema.
-The reviewer discovers the diff in the pinned snapshot; do not pipe it a
-caller-curated diff. Standard is the default; T1 or owner force may route
-frontier. T2–T5 apply only to per-finding rounds.
+the repository path, the bounded defect-hunt mandate and this schema.
+The reviewer reads the pinned diff from the shared repository; do not pipe
+it a caller-curated diff. Standard is the default; T1 or owner force may
+route frontier. T2–T5 apply only to per-finding rounds.
 
 ```json
 {"verdict":"clean|findings","capability_ok":true,
@@ -206,22 +204,25 @@ A coder triaging its own candidates still records declined reasons.
 
 ## Per-finding flow
 
-The initial fix follows **one finding ↔ one commit ↔ one verdict**, on a
-work branch `fix/<id>-<slug>` per finding. Repairs and verdict receipts
-are follow-up commits for that same finding, never an amend. Broader
-multi-finding sweeps need explicit owner scope. Branch setup and completion
-follow `.agents/playbooks/git.md`; direct-to-main fixes are not a shortcut.
+Repo policy selects **one finding ↔ one commit ↔ one verdict** on main,
+or **one finding ↔ one branch ↔ one verdict** on `fix/<id>-<slug>`.
+Repairs use follow-up commits, never an amend. Broader multi-finding sweeps
+need explicit owner scope. Completion follows `.agents/playbooks/git.md`.
+
+The loop is synchronous: dispatch, await, record and act on one finding's
+verdict before dispatching the next. No overlapping finding reviews.
 
 1. Within implementation authority, declare the files, implement the fix
    and prove its test fails without the fix and passes with it. Commit the
    fix and its evidence. A genuinely untestable change must explain why
    and give the manual reproduction/check instead; do not claim an
    automated guard ran.
-2. Dispatch the named reviewer at the routed tier. Pin head to the fix
-   branch commit and base to its merge-base with main at dispatch. Supply
-   the finding path and disposable worktree. The reviewer independently
-   repeats the guard proof there. A manual proof needs independent
-   confirmation too.
+2. Dispatch the named reviewer at the routed tier with the finding path.
+   On main, pin head
+   to the fix commit and base to its parent; on a work branch, use its head
+   and merge-base with main at dispatch. The reviewer reads the pinned diff
+   and repeats the guard proof in its own worktree. Manual proof also
+   needs independent confirmation.
 3. Apply Verdict handling and the per-finding schema:
    ```json
    {"verdict":"accepted|reopened|invalid","guard_confirmed":true,
@@ -232,10 +233,10 @@ follow `.agents/playbooks/git.md`; direct-to-main fixes are not a shortcut.
    A missing/false proof flag cannot close the finding.
 4. Record the verdict and provenance in the finding before acting. Commit
    the record and update its index row:
-   - **accepted:** mark Awaiting merge. Follow the git playbook through
-     integration, local/remote branch deletion, and completion. The
-     verdict grants no merge, push, or deletion authority. New
-     implementation changes after acceptance require another review.
+   - **accepted:** on main, close the finding with its records and required
+     push. On a work branch, mark Awaiting merge and follow git closeout
+     through integration and local/remote branch deletion. Acceptance grants
+     no merge, push, or deletion authority.
    - **reopened:** repair in follow-up commits, then redispatch the repair
      delta with T5 routing.
    - **invalid:** record the disagreement in
@@ -262,7 +263,7 @@ T4. Preserve the prior review and append the repair verdict.
 
 **Severity**: CRITICAL | HIGH | MEDIUM | LOW — <impact reason>
 **Status**: Open | In progress | Verified | Awaiting merge | Awaiting deletion | Complete | Contested
-**Branch**: fix/<id>-<slug>
+**Branch**: fix/<id>-<slug>, or — for direct-to-main
 **Commit**: <fix SHA>
 
 ## Evidence
@@ -287,8 +288,8 @@ T4. Preserve the prior review and append the repair verdict.
 <verdict, comments and Dispatch provenance fields for each round>
 
 ## Closeout
-<integration commit and content proof; local/remote branch absence;
-completion receipt, or the pending step>
+<main commit and completion receipt; for branch work, integration content
+proof and local/remote branch absence; otherwise the pending step>
 ```
 
 ## Status index: `.agents/review/index.md`
@@ -300,16 +301,9 @@ provenance. Details live in the finding, not the index.
 - `[~]` In progress / pending review.
 - `[v]` Verified / awaiting merge.
 - `[d]` Merged / awaiting deletion.
-- `[x]` Complete: merged and work branch deleted locally and remotely.
+- `[x]` Complete: verified on main; any work branch merged and deleted locally and remotely.
 - `[!]` Contested; owner adjudication pending.
 - `[-]` Declined; no implementation work.
 
 While any finding has pending work, keep one pointer to this index in
 `.agents/state.md`. Remove it only after completion or explicit cancellation.
-
-## Optional modes
-
-Single-agent mode requires the owner's selection and is recorded as
-self-review. Preserve intake, proof, contested reasons, pins and closeout;
-do not report it as independent review. An optional third adjudicator
-requires an explicit owner dispatch.

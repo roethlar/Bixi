@@ -14,11 +14,10 @@ The substantive prompt is exactly:
 > and how you would achieve it. Then judge: is the change as made the best
 > way to achieve that goal?
 
-Supply only mechanical coordinates: the pinned base/head SHAs, the
-disposable worktree at head, permission to inspect the repository, the
-tool/side-effect boundaries and the verdict schema. Base is the merge-base
-with main at dispatch. All inspection and verification use that pinned
-snapshot.
+Supply only mechanical coordinates: the repository path, pinned base/head
+SHAs, inspection permissions, tool/side-effect boundaries and verdict
+schema. Base is the merge-base with main at dispatch. Read the pinned diff
+from the shared repository; a read-only review needs no worktree.
 
 Do not summarize the plan, propose risks or findings, supply a checklist,
 repeat claimed invariants, or disclose prior reviewer conclusions. The

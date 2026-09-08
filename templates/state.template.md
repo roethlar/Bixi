@@ -9,7 +9,7 @@ by machine and dated.
 
 ## Now
 
-- <Task, work branch, verified head, and stage: in progress / verified /
+- <Task, work branch if any, verified head, and stage: in progress / verified /
   awaiting merge / awaiting deletion. Completion follows the git playbook;
   do not archive work with pending integration or cleanup.>
 

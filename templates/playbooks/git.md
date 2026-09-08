@@ -27,12 +27,12 @@ existing name such as `master`. Resolve it from repo guidance and verify
 against the canonical remote's HEAD; ask if they disagree or it is
 ambiguous. Do not rename a branch to satisfy this vocabulary.
 
-Implementation uses a work branch from current main. Record its name and
-base commit with the task. In a new repo, initial creation establishes main
-before implementation begins. A contrary repo branch policy must be
-resolved before starting; do not silently retain a direct-to-main shortcut.
+Repo policy determines whether implementation uses main or a work branch.
+When using a work branch, record its name and base commit with the task.
+Direct-to-main work closes after verification and required records/pushes;
+the branch closeout below applies when a work branch exists.
 
-Work proceeds through **in progress → verified → awaiting merge →
+Branch work proceeds through **in progress → verified → awaiting merge →
 awaiting deletion → complete**. A review verdict or scoped operator can
 finish while the underlying work remains pending. Keep its state entry,
 plan and tracker open until closeout; update records as each step lands.

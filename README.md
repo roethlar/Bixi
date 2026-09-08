@@ -66,8 +66,8 @@ The agent discovers the repo live, inventories any governance it already has
 files in a scratch directory, and shows you one plain-English approval
 summary. Tracked installation changes wait for approval and use the
 announced scoped commit(s).
-Implementation is complete only after verification, integration into the
-primary branch, and deletion of its work branch locally and remotely.
+Implementation follows repo branch policy. Work on a branch is complete
+only after verification, merge into the primary branch, and local/remote deletion.
 Pending approval or cleanup stays visible.
 
 ## Keep a repo current

@@ -217,13 +217,11 @@ message. Present it and wait.
 
 ## Step 7: After approval — install and commit
 
-Two routes. The summary names the route, exact commit message(s), task
-branch, and intended main (the integration branch defined by the git
-playbook). For an existing repo, create or reuse the approved work branch
-before installation; follow the git playbook's branch setup. A newly
-initialized repo establishes main with its first commit. If branch setup
-changes the HEAD pinned by the refresh plan, regenerate and re-present the
-plan before applying it. Approval covers exactly the announced scope.
+Two routes. The summary names the route and exact commit message(s).
+Follow repo branch policy; if using a work branch, name it and the intended
+main. Initial creation establishes main. If branch setup changes the HEAD
+pinned by the refresh plan, regenerate and re-present the plan before
+applying it. Approval covers exactly the announced scope.
 
 **Standard route** — no legacy core governance file is being superseded:
 
@@ -270,9 +268,9 @@ commits, both announced with exact messages in the approval summary:
 Both routes, then:
 
 4. Push per `.agents/push-policy.md`, reusing explicit push authority
-   already given. An installation commit is not task completion: verify
-   the result and follow the git playbook through merge and local/remote
-   work-branch deletion. Report pending steps until closeout is satisfied.
+   already given. Verify the result; if using a work branch, follow the git
+   playbook through merge and local/remote deletion before completion.
+   Report pending steps until closeout is satisfied.
 5. **Hook trust.** The shipped hook configs carry compaction re-grounding
    and/or protection against editing installed governance. If the current
    harness gates them on trust, explain those hooks and run the trust step

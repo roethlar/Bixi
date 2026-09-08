@@ -16,8 +16,8 @@
    A foreign AGENTS.md needs an explicit replacement decision:
    owner-requested replacement uses `--force`; otherwise follow
    `<toolkit>/procedures/bootstrap.md`. Do not resolve flags on inference.
-4. Verify the result and follow the git playbook through integration and
-   local/remote work-branch deletion. Report pending steps honestly.
+4. Verify the result. For work branches, follow the git playbook through
+   integration and local/remote deletion. Report pending steps honestly.
 
 This operator adds no write authority beyond its defined refresh steps.
 Repo-guidance edits and migration judgments require their own approved

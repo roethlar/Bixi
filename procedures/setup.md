@@ -56,7 +56,7 @@ owner's choice.
 ## Step 4 — One scoped commit
 
 This first commit establishes the repo's integration branch. Subsequent
-implementation uses work branches and the git playbook's closeout.
+implementation follows repo branch policy and the git playbook's closeout.
 
 Commit the staged shipped set **plus** the four judgment drafts as ONE
 scoped commit: `git add` exactly those paths (never `git add -A`, never

@@ -75,8 +75,8 @@ known blanket harness-dir ignore itself; anything else it flags. Write
 important, raise the ignore rule as a question instead; never plan a silent
 `git add -f`.>
 
-<Name the task branch and intended integration branch for an existing
-repo; initial repository creation establishes main. State the exact commit
+<Follow repo branch policy; name any work branch and its integration
+target. Initial creation establishes main. State the exact commit
 message that will be used. Approving this summary
 authorizes copying the judgment drafts, running the refresh install, and
 making ONE scoped commit covering both groups (exactly the lists above,

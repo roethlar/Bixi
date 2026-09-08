@@ -4,8 +4,8 @@
 
 - Answer first; act only on an explicit go for the named scope. A plan, report, or spec is not a go.
 - No code change without an approved plan. Non-shipped bookkeeping needs none; when unsure, treat it as code.
-- Commit slices with records. Work is incomplete until merged into main and its branch deleted. Push policy: `.agents/push-policy.md`.
-- Repo files are the only durable memory. Under context pressure, re-read this file; hand off before judgment degrades.
+- Commit slices with records. Branch work is incomplete until merged into main and its branch deleted. Push policy: `.agents/push-policy.md`.
+- Only repo files are durable memory. Under context pressure, re-read this file; hand off before judgment degrades.
 
 ## Repo-Specific Guidance
 
@@ -42,15 +42,17 @@ Read `.agents/playbooks/<name>.md` at invocation; it defines the procedure.
 
 ## Owner Gates
 
-Ask one unsettled decision at a time: context, proposed action, consequence, recommendation. Approval remains valid within its scope; silence authorizes nothing.
+Ask one unsettled decision: context, action, consequence, recommendation. Approval remains valid within its scope; silence authorizes nothing.
 
 ## Verification
+
+Self-review is forbidden unless explicitly requested by the owner.
 
 Run the entry point in `.agents/repo-guidance.md` before claiming completion; docs-only changes need `git diff --check` unless they affect behavior. Prove a new test bites: revert the fix, watch it fail, restore. State any check not run.
 
 ## Git Safety
 
-Merges, deletion, history rewrites (amend, rebase, squash, force-push), and outward-facing actions require explicit authority for those actions. A commit approval covers no rewrite. One finding per commit. Verify content reached main with `git diff` before deleting a branch; ancestry alone is insufficient. Branch setup and closeout: `.agents/playbooks/git.md`.
+Merges, deletion, history rewrites (amend, rebase, squash, force-push), and outward-facing actions require explicit authority for those actions. One finding per commit. Verify content reached main with `git diff` before deleting a branch; ancestry alone is insufficient. Branch setup and closeout: `.agents/playbooks/git.md`.
 
 ## Final Response
 
