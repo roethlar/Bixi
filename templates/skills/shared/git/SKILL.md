@@ -1,6 +1,6 @@
 ---
 name: git
-description: Run the git playbook for plain-English delegated git operations (push, reconcile, add-remote, branch-cleanup). Use when the owner says git <operation> or /git <operation>.
+description: Run delegated Git operations when the owner says git operation or /git operation.
 # toolkit-owned; edits are drift — see AGENTS.md
 ---
 

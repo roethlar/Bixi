@@ -20,6 +20,8 @@ copy — so a product-only file lives here, under product/, and publishes to
 its own name there.
 """
 import argparse
+import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -79,9 +81,21 @@ def recorded_product_repo(dev_repo: Path) -> "Path | None":
     machines = dev_repo / ".agents" / "machines.md"
     if not machines.exists():
         return None
-    found = _recorded_paths(
-        machines.read_text(encoding="utf-8", errors="replace"))
-    return found[0] if found else None
+    text = machines.read_text(encoding="utf-8", errors="replace")
+    host = platform.node().split(".")[0].casefold()
+    sections = list(re.finditer(r"^## (.+)$", text, re.M))
+    for i, section in enumerate(sections):
+        if section.group(1).split()[0].casefold() == host:
+            end = sections[i + 1].start() if i + 1 < len(sections) else len(text)
+            found = _recorded_paths(text[section.end():end])
+            if found:
+                return found[-1]
+    found = list(dict.fromkeys(_recorded_paths(text)))
+    usable = [p for p in found if (p / ".git").exists()]
+    if len(usable) == 1:
+        return usable[0]
+    # Keep legacy single-entry records readable; never guess among machines.
+    return found[0] if len(found) == 1 else None
 
 
 def record_product_repo(dev_repo: Path, product: Path) -> None:
@@ -103,7 +117,15 @@ def record_product_repo(dev_repo: Path, product: Path) -> None:
     line = _record_line(product, datetime.date.today().isoformat())
     if not text.endswith("\n"):
         text += "\n"
-    machines.write_text(text + line, encoding="utf-8")
+    host = platform.node().split(".")[0]
+    sections = list(re.finditer(r"^## (.+)$", text, re.M))
+    for i, section in enumerate(sections):
+        if section.group(1).split()[0].casefold() == host.casefold():
+            end = sections[i + 1].start() if i + 1 < len(sections) else len(text)
+            machines.write_text(text[:end].rstrip() + "\n" + line + "\n" + text[end:],
+                                encoding="utf-8")
+            return
+    machines.write_text(text + "\n## " + host + "\n\n" + line, encoding="utf-8")
 
 
 def main(argv=None) -> int:
@@ -196,12 +218,10 @@ def main(argv=None) -> int:
 
     git(product, "add", "-A")
     staged = git(product, "status", "--porcelain", check=False).stdout.strip()
-    if not staged:
-        print("publish: the product repo already matches — nothing to release.")
-        return 0
     import datetime
     stamp = datetime.date.today().isoformat()
-    git(product, "commit", "-q", "-m", "release {}".format(stamp))
+    if staged:
+        git(product, "commit", "-q", "-m", "release {}".format(stamp))
     sha = git(product, "rev-parse", "--short", "HEAD").stdout.strip()
 
     if args.product_repo:
@@ -219,8 +239,12 @@ def main(argv=None) -> int:
                 return 3
             pushed = True
 
-    print("publish: {} files released as {} ({}){}.".format(
-        copied, stamp, sha, " and pushed" if pushed else ", not pushed"))
+    if staged:
+        print("publish: {} files released as {} ({}){}.".format(
+            copied, stamp, sha, " and pushed" if pushed else ", not pushed"))
+    else:
+        print("publish: already matches ({}){}.".format(
+            sha, " and pushed" if pushed else ", not pushed"))
     return 0
 
 

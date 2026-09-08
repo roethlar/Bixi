@@ -1,45 +1,22 @@
 <!-- toolkit-owned; edits are drift — see AGENTS.md -->
 
-# Playbook: `drift` — the isolated state-hygiene sweep
+# Playbook: `drift` — record hygiene
 
-Not an owner verb: this playbook is executed by the throwaway cleanup
-agent that `catchup` spawns (owner design 2026-08-02), or directly on
-the owner's plain words (`playbook drift`). It exists as its own file so
-the cleanup agent never reads `catchup` — an agent handed the catchup
-playbook is one obedient read away from re-asking the spawn question or
-spawning recursively.
+Tidy the records relevant to the request or observed drift. Work directly
+unless delegation was explicitly requested. Spawn nothing recursively.
+Uncertain or contested claims become concise flags, not speculative edits.
 
-## Contract (cleanup agent)
+- Archive completed/superseded state and settled rationale only when it
+  obscures active guidance; retain one canonical rule or pointer.
+  Work awaiting merge or branch deletion stays active.
+- Recheck a parked item or machine fact when needed for the task or evidence
+  suggests change; do not reprobe every fact on every pass.
+- Timestamp necessary volatile evidence. Git owns live push status; remove
+  stale status claims rather than maintaining duplicate tracking.
+- Replace duplicate counts/facts with their canonical pointers.
+- Correct contradicted repo-owned guidance from evidence. Route defects in
+  toolkit-owned installed copies to their source.
 
-- Work alone in your own context. **Spawn nothing.** Ask nothing.
-- Apply the checklist below to this repo's `.agents/` records only.
-- Commit everything you changed as **one tidy commit**.
-- Decide nothing contested: anything that needs an owner ruling, or
-  whose evidence you cannot verify, becomes a flag in your summary —
-  never a change.
-- Do not re-ground, plan, or report beyond your final message: reply
-  with exactly **one summary line**, e.g.
-  "rotated 4, dropped 1 stale fact, flagged 2 for judgment", and stop.
-
-## Checklist (`.agents/` records only)
-
-- Rotate completed or explicitly superseded `## Now` entries verbatim to
-  `docs/history/state-archive.md`. Keep work awaiting merge or branch
-  deletion live; a verified fix is not completion.
-- Re-verify the recorded basis of every parked or blocked item; move
-  anything falsified into `## Blockers` with the new evidence.
-- Volatile facts (CI state, counts) carry `as of <commit>` and are
-  re-verified or dropped.
-- Push status is never recorded in state files — git owns it, sessions
-  check it live, and unpushed work is mentioned only in the moment it
-  matters — so any recorded push-state line is **deleted on sight**, not
-  refreshed (2026-07-11 ruling).
-- A count or enumeration another file owns is pointed to, never copied.
-- Machine-specific facts live in `.agents/machines.md`; prune stale
-  entries there.
-- Archive settled decision rationale verbatim once its rule has an
-  operative canonical home; keep unresolved or otherwise homeless rules live.
-- A doc, decision, or guidance claim that disagrees with repo evidence:
-  fix the lower-authority source — a repo-owned file in place, a
-  refresh-installed copy is report-and-route, never edited — or report
-  the unresolved conflict as a flag.
+Commit actual record changes as one tidy commit, push per policy, and
+summarize what changed or needs a ruling. No empty commit, prescribed
+response shape or separate agent to format the result.

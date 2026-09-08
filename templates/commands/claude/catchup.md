@@ -1,5 +1,5 @@
 ---
-description: Re-ground in this repo's current state, tidy the record, and report. Use when the owner says catchup or asks where things stand.
+description: Re-ground, tidy relevant records and report when the owner says catchup.
 # toolkit-owned; edits are drift — see AGENTS.md
 ---
 

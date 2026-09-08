@@ -2,7 +2,7 @@
   "hooks": {
     "SessionStart": [
       { "matcher": "compact",
-        "hooks": [ { "type": "command", "command": "echo 'Context was compacted or the session restarted. Before continuing, re-read AGENTS.md from disk, especially the Prime Invariants block. Treat AGENTS.md, not this message, as authoritative.'" } ] }
+        "hooks": [ { "type": "command", "command": "echo 'Restore AGENTS.md if missing or stale in context before continuing.'" } ] }
     ],
     "PreToolUse": [
       { "matcher": "Edit|Write|MultiEdit|NotebookEdit",

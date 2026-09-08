@@ -711,9 +711,16 @@ def build_record(toolkit: Path, target: Path, plan: Plan) -> dict:
         return {"target": t,
                 "source": Path(s).relative_to(toolkit).as_posix(),
                 "sha256": hashlib.sha256(Path(s).read_bytes()).hexdigest()}
+    def input_pin(rel):
+        path = target / rel
+        if path.is_symlink():
+            return "symlink:" + os.readlink(path)
+        return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
     head = git(target, "rev-parse", "HEAD", check=False)
     rec = {
         "schema": 2,
+        "target_inputs": {rel: input_pin(rel) for rel in touched_paths(plan)},
+        "runner_digest": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "toolkit_sha": git(toolkit, "rev-parse", "HEAD").stdout.strip(),
         "toolkit_dirty": bool(
             git(toolkit, "status", "--porcelain", check=False).stdout.strip()),
@@ -744,19 +751,24 @@ def verify_record(record: dict, toolkit: Path, target: Path, plan: Plan) -> "lis
     non-empty result refuses the apply before the first write."""
     if record.get("schema") != 2:
         return ["unsupported plan schema: {!r}".format(record.get("schema"))]
+    unsigned = {key: value for key, value in record.items() if key != "digest"}
+    digest = hashlib.sha256(json.dumps(
+        unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    if digest != record.get("digest"):
+        return ["plan digest mismatch"]
     current = build_record(toolkit, target, plan)
-    problems = []
-    if current["toolkit_dirty"] or record.get("toolkit_dirty"):
-        problems.append("toolkit worktree is dirty (apply requires a clean tree)")
-    for field in ("toolkit_sha", "manifest_digest", "target_head", "installs",
-                  "updates", "restores", "drift", "removes",
-                  "gitignore_repairs", "flags", "staged_paths",
-                  "already_staged"):
-        if current[field] != record.get(field):
-            problems.append("drift in {}: the current state no longer matches the approved plan".format(field))
-    if not problems and current["digest"] != record.get("digest"):
-        problems.append("plan digest mismatch")
-    return problems
+    # Pins protect the actual operation. Unrelated commits, metadata and
+    # dirty files do not invalidate already-approved, unchanged content.
+    fields = ["installs", "updates", "restores", "removes",
+              "gitignore_repairs", "flags", "staged_paths", "already_staged"]
+    if "target_inputs" in record:
+        fields += ["target_inputs", "runner_digest"]
+    else:
+        # Older records lack input pins; retain their snapshot protection.
+        fields += ["toolkit_sha", "toolkit_dirty", "manifest_digest",
+                   "target_head", "drift"]
+    return ["drift in {}: affected content no longer matches the approved plan".format(field)
+            for field in fields if current[field] != record.get(field)]
 
 
 def touched_paths(plan: Plan) -> list:
@@ -894,18 +906,6 @@ def emptied_dirs(target_repo: Path, shipped: dict) -> list:
     return sorted(found, key=lambda p: (-p.count("/"), p))
 
 
-def confirm_prune(count: int, input_fn=input) -> bool:
-    """One question, default yes; anything else declines. Callers gate on
-    isatty - never reached non-interactively."""
-    try:
-        answer = input_fn(
-            "Remove {} empty director{} left by retired files? [Y/n] ".format(
-                count, "y" if count == 1 else "ies")).strip().lower()
-    except EOFError:
-        return False
-    return answer in ("", "y", "yes")
-
-
 def prune_dirs(target_repo: Path, dirs: list) -> list:
     """rmdir each, deepest first; a directory that stopped being empty
     (racing writer) is skipped, never forced."""
@@ -1009,7 +1009,8 @@ def codex_trust_pin(target_repo: Path, codex_argv, confirm) -> str:
             pass
         lines.put(None)
 
-    threading.Thread(target=_reader, daemon=True).start()
+    reader = threading.Thread(target=_reader, daemon=True)
+    reader.start()
 
     def send(obj):
         proc.stdin.write(json.dumps(obj) + "\n")
@@ -1086,7 +1087,15 @@ def codex_trust_pin(target_repo: Path, codex_argv, confirm) -> str:
             proc.stdin.close()
         except OSError:
             pass
-        proc.terminate()
+        if proc.poll() is None:
+            proc.terminate()
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
+        reader.join(timeout=2)
+        proc.stdout.close()
 
 
 def offer_codex_hook_trust(target_repo: Path, plan: Plan,
@@ -1158,28 +1167,17 @@ def render_cmd(argv, windows=None) -> str:
 
 
 def non_tty_commands(candidates, prompt: str, target: Path, toolkit: Path) -> str:
-    """The non-interactive fallback under the banner: never prompt, never
-    hang - print the exact ready-to-paste launch command per detected
-    harness (or the procedure path when nothing is installed)."""
-    if not candidates:
-        return ("  no known harness CLI found on PATH; the procedure is\n"
-                "  {}".format(toolkit / "procedures" / "bootstrap.md"))
-    lines = ["  to run bootstrap, launch one of these in {}:".format(target)]
-    for _name, shape in candidates:
-        lines.append("    " + render_cmd(launch_argv(shape, prompt)))
-    return "\n".join(lines)
+    """Continue in the caller without duplicating per-harness launch prompts."""
+    return "  Continue bootstrap in the current agent: {}".format(
+        toolkit / "procedures" / "bootstrap.md")
 
 
 def remediate_prompt(toolkit: Path, target: Path, warns) -> str:
     lines = ["Governance hygiene findings in this repo need judgment fixes:"]
     for rel, msg, _kind in warns:
         lines.append("- {}: {}".format(rel, msg))
-    return ("Read {} in full. This is an INTERACTIVE session with the "
-            "owner: present each finding below one at a time — its evidence, "
-            "the options, your recommendation — and ask the owner how to "
-            "remediate it. The owner decides; you apply the decision. Do not "
-            "fix anything on your own authority and do not end the session; "
-            "the owner ends it. Findings in {}:\n\n{}").format(
+    return ("Follow {} using existing authority; ask only for unsettled "
+            "choices. Findings in {}:\n{}").format(
                 toolkit / "procedures" / "remediate-governance.md",
                 target, "\n".join(lines))
 
@@ -1226,7 +1224,8 @@ def terse_line(target: Path, plan: Plan, sync_note: str, changed: bool,
     behind a rerun flag. Healthy loop runs read as one line per repo."""
     repo = target.name or str(target)
     if not changed:
-        out = "refresh: {} — already current".format(repo)
+        out = "refresh: {} — {}".format(
+            repo, "unresolved flags" if plan.flags else "already current")
     else:
         parts = []
         seeded = set(plan.seeded)
@@ -1241,8 +1240,9 @@ def terse_line(target: Path, plan: Plan, sync_note: str, changed: bool,
         if plan.gitignore_repairs:
             parts.append(".gitignore repaired")
         where = "staged, uncommitted" if stage_only else "commit " + commit_sha
-        out = "refresh: {} — {} ({}; details in the commit message)".format(
-            repo, ", ".join(parts), where)
+        detail = "inspect git diff --cached" if stage_only else "details in the commit message"
+        out = "refresh: {} — {} ({}; {})".format(
+            repo, ", ".join(parts), where, detail)
     if sync_note:
         out += " — " + sync_note
     return out
@@ -1295,7 +1295,7 @@ def main(argv=None) -> int:
     ap.add_argument("--plan-json", default=None, metavar="PATH",
                     help="read-only: write the operation record as JSON (or - for stdout) and change nothing")
     ap.add_argument("--apply", default=None, metavar="PLAN",
-                    help="apply a --plan-json record, refusing if anything drifted since it was made")
+                    help="apply a --plan-json record, refusing changed operation inputs")
     ap.add_argument("--force", action="store_true",
                     help="replace even foreign core governance files (git history preserves "
                          "the old content); uncommitted changes are still protected")
@@ -1310,6 +1310,8 @@ def main(argv=None) -> int:
                     help="read-only: print hygiene findings and exit (0 clean, "
                          "6 findings present); no sync, reconcile, commit, or offers")
     args = ap.parse_args(argv)
+    if args.plan_json:
+        args.no_sync = True
 
     if args.plan_json and args.apply:
         print("refresh: --plan-json and --apply are mutually exclusive", file=sys.stderr)
@@ -1337,8 +1339,8 @@ def main(argv=None) -> int:
         found = lint_governance(target)
         warns = sum(1 for _rel, _msg, kind in found if kind != "note")
         for rel, msg, kind in found:
-            if kind == "note" and not warns:
-                continue  # context for warns, never standalone (2026-07-25)
+            if kind == "note":
+                continue  # Historical references require no action.
             print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, msg))
         if warns:
             print("refresh: {} hygiene finding(s) need judgment.".format(warns))
@@ -1358,14 +1360,6 @@ def main(argv=None) -> int:
     # refusals leave the tree untouched. (Exit 5 is not such a refusal — it
     # reports a foreign core file after other artifacts may already have been
     # installed and committed.)
-    policy_path = target / ".agents" / "push-policy.md"
-    policy_line = None
-    if policy_path.exists():
-        policy_lines = policy_path.read_text(encoding="utf-8").strip().splitlines()
-        if not policy_lines:
-            print("refresh: {} is empty or malformed; fix the push policy before refreshing".format(policy_path), file=sys.stderr)
-            return 4
-        policy_line = policy_lines[-1]
     sync_note = ""
     if not args.no_sync:
         head_before = git(toolkit, "rev-parse", "HEAD").stdout.strip()
@@ -1418,14 +1412,16 @@ def main(argv=None) -> int:
             sys.stdout.write(payload)
         else:
             Path(args.plan_json).write_text(payload, encoding="utf-8")
-        print("governance refresh plan against toolkit {} (read-only - nothing changed)".format(toolkit_sha))
-        print(summarize(plan, sync_note, show_staged=True))
+        output = sys.stderr if args.plan_json == "-" else sys.stdout
+        print("governance refresh plan against toolkit {} (read-only - nothing changed)".format(toolkit_sha),
+              file=output)
+        if args.plan_json != "-":
+            print(summarize(plan, sync_note, show_staged=True), file=output)
         found = lint_governance(target)
-        has_warn = any(kind != "note" for _rel, _msg, kind in found)
         for rel, note_msg, kind in found:
-            if kind == "note" and not has_warn:
-                continue  # context for warns, never standalone (2026-07-25)
-            print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, note_msg))
+            if kind == "note":
+                continue  # Historical references require no action.
+            print("  {} {}: {}".format("NOTE" if kind == "note" else "LINT", rel, note_msg), file=output)
         return 0
 
     if plan_record is not None:
@@ -1516,39 +1512,19 @@ def main(argv=None) -> int:
     # per-handler pin). Silent off-TTY and without codex on PATH.
     offer_codex_hook_trust(target, plan)
 
-    # Final cleanup: retiring the last file in a directory leaves the
-    # directory behind, invisible to git. Ask once before removing any of
-    # them (owner ruling 2026-07-25); automated runs report and remove
-    # nothing. Nothing here is staged or committed - an empty directory is
-    # untracked by definition, so this can never touch the plan record.
+    # Removing retired files includes their now-empty directories. --prune
+    # also covers directories left empty by earlier runs; never force rmdir.
     stale_dirs = emptied_dirs(target, shipped)
-    if stale_dirs:
-        for d in stale_dirs:
-            print("  empty: {}".format(d))
-        # --prune is consent given on the command line. Without it the prompt
-        # needs a real TTY, and an owner driving refresh from a non-TTY shell
-        # (an agent harness, a wrapper) can never reach it — the cleanup would
-        # report forever and never run (observed 2026-07-25).
-        interactive = sys.stdin.isatty() and sys.stdout.isatty() and not args.no_remediate
-        if args.prune or (interactive and confirm_prune(len(stale_dirs))):
-            for d in prune_dirs(target, stale_dirs):
-                print("  pruned: {}".format(d))
-        else:
-            print("  (left in place; nothing was removed)")
+    eligible = [d for d in stale_dirs if args.prune or
+                any(rel.startswith(d + "/") for rel in plan.remove)]
+    pruned = prune_dirs(target, eligible)
+    if pruned:
+        print("  pruned: {}".format(", ".join(pruned)))
+    for rel, reason in plan.flags:
+        print("  FLAG {}: {}".format(rel, reason))
     findings = lint_governance(target)
     warns = [(rel, msg, kind) for rel, msg, kind in findings if kind != "note"]
-    # Notes are context for warns, never standalone output (2026-07-25 owner
-    # ruling, superseding the print-always half of the 2026-07-09 direction).
-    # A git-vouched historical reference is permanent and carries no action,
-    # so printing it on every run of every repo is noise the owner cannot
-    # clear. The typo-safe distinction it feeds is unchanged: git history
-    # still decides note-vs-warn, and warns still print and still drive
-    # remediation.
-    if warns:
-        for rel, msg, kind in findings:
-            if kind == "note":
-                print("  NOTE {}: {}".format(rel, msg))
-    if warns and not args.no_remediate:
+    if warns and not args.no_remediate and not core:
         # Judgment findings: explain why the run cannot fully converge (the
         # LINT lines), then ASK whether to launch an interactive remediation
         # session, and in which harness (2026-07-23 owner ruling: no
@@ -1565,7 +1541,7 @@ def main(argv=None) -> int:
                                    question="Launch a remediation session now?")
         if code:
             print("  remediation session exited nonzero ({}) — findings "
-                  "may remain; re-run to retry.".format(code))
+                  "may remain; inspect its result before retrying.".format(code))
     elif warns:
         for rel, msg, _kind in warns:
             print("  LINT {}: {}".format(rel, msg))
@@ -1573,11 +1549,16 @@ def main(argv=None) -> int:
     if core:
         print(banner_block(core))
         prompt = bootstrap_prompt(toolkit, target)
-        candidates = detect_harnesses(target=target)
-        if candidates and sys.stdin.isatty() and sys.stdout.isatty():
-            offer_bootstrap(candidates, prompt, target)
+        if not args.no_remediate and sys.stdin.isatty() and sys.stdout.isatty():
+            candidates = detect_harnesses(target=target)
+            result = offer_bootstrap(candidates, prompt, target)
+            if result == 0:
+                remaining = classify(target, toolkit, shipped)
+                check_committability(target, remaining, shipped)
+                if not core_flags(remaining, shipped):
+                    return 0
         else:
-            print(non_tty_commands(candidates, prompt, target, toolkit))
+            print(non_tty_commands([], prompt, target, toolkit))
         # A flagged core (replace-whole) file means the repo did not converge
         # to the shipped set: distinct exit 5 so a script can tell an
         # ungoverned repo from a clean converged run (exit 0).

@@ -121,13 +121,8 @@ def main() -> int:
             if hit:
                 break  # any protected path denies the whole call
         if hit:
-            reason = (
-                "BLOCKED: {} was installed by governance refresh and is "
-                "toolkit-owned. Editing installed copies is out of bounds; "
-                "any local change is drift and is restored on the next "
-                "refresh. Put repo-local rules in .agents/repo-guidance.md "
-                "- the file that sticks; changes to installed artifacts "
-                "route to the owner for the toolkit.".format(rel))
+            reason = ("{} is toolkit-owned; edit toolkit sources. "
+                      "Repo rules belong in .agents/repo-guidance.md.".format(rel))
             sys.stdout.write(json.dumps({
                 "hookSpecificOutput": {
                     "hookEventName": "PreToolUse",

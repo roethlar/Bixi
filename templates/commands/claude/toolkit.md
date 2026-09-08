@@ -1,5 +1,5 @@
 ---
-description: List the owner verbs in this repo, one plain line per verb. Use when the owner asks what they can say, or says toolkit.
+description: List owner verbs when the owner says toolkit or asks what commands are available.
 # toolkit-owned; edits are drift — see AGENTS.md
 ---
 

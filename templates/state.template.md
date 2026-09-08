@@ -1,37 +1,18 @@
 # Agent State
 
-Keep only live work here; archive historical entries verbatim under
-`docs/history/state-archive.md`. The `catchup` sweep performs hygiene;
-`handoff` only snapshots. Use canonical pointers instead of copied counts.
-Stamp volatile facts `as of <commit>`. Check push status live in git,
-never store it here. Put machine facts in `.agents/machines.md`, keyed
-by machine and dated.
+Keep live work and canonical pointers only. Omit empty sections and facts
+already owned elsewhere. Archive history when it obscures current work.
+Timestamp necessary volatile evidence; Git owns live push status.
+Machine facts belong in `.agents/machines.md`, dated and keyed by machine.
 
 ## Now
 
-- <Task, work branch if any, verified head, and stage: in progress / verified /
-  awaiting merge / awaiting deletion. Completion follows the git playbook;
-  do not archive work with pending integration or cleanup.>
+- <Task, branch if any, verified head, and remaining implementation/merge/
+  deletion work. Do not mark branch work complete before git closeout.>
 
 ## Next
 
-- <Next useful action or "None recorded".>
+- <Next useful action, if any.>
 
-## Blockers
-
-- <Live blockers or "None recorded"; cite evidence for changed assumptions.>
-
-## Verification
-
-- See `.agents/repo-guidance.md` (Verification). Record only a currently
-  active deviation here.
-
-## Active Sources
-
-- `AGENTS.md`
-- `.agents/repo-guidance.md`
-- `.agents/decisions.md`
-
-## Unrecorded Repo Memory
-
-- <Durable facts or questions still needing a home, or "None known".>
+<Add blockers or unresolved facts only when present. Verification commands
+live in repo guidance; record only an active deviation here.>

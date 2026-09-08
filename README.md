@@ -46,26 +46,24 @@ agent reads before it touches anything.
 
 Windows: `<path-to-bixi>\tools\new-project.cmd <project-dir> [hint]`
 
-Creates the directory, runs `git init`, installs the governance set, and
-offers to launch an agent harness it detects to finish setup — it asks what
-you're building and how you want pushes handled, then makes the first commit.
-The optional hint ("a markdown todo CLI") means setup opens with a
-confirmation instead of an interrogation. The launcher finds a working Python
-itself.
+Creates the directory, initializes Git and stages governance. Continue in
+the current agent; interactive shells can offer a harness launch. Setup
+uses your project hint and push-policy choice, asks only for missing
+information, and makes the first scoped commit. The launcher resolves Python.
 
 ## Adopt an existing repo
 
-Open an agent session in that repo and paste:
+Use the current agent in that repo and request:
 
 ```text
 Read <path-to-bixi>/procedures/bootstrap.md and follow it.
 ```
 
 The agent discovers the repo live, inventories any governance it already has
-(migrate, supersede, or leave — each with a reason), drafts the repo-specific
+(changed artifacts and unresolved conflicts), drafts the repo-specific
 files in a scratch directory, and shows you one plain-English approval
 summary. Tracked installation changes wait for approval and use the
-announced scoped commit(s).
+scoped commit. Existing authority is reused.
 Implementation follows repo branch policy. Work on a branch is complete
 only after verification, merge into the primary branch, and local/remote deletion.
 Pending approval or cleanup stays visible.
