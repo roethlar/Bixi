@@ -1,6 +1,6 @@
 # Repo-Specific Guidance
-<!-- Extends AGENTS.md; never overrides it. Rules and pointers only — state
-     lives in .agents/state.md. -->
+<!-- Repo-specific rules and pointers; state lives in .agents/state.md.
+     Apply AGENTS.md's specific-rule precedence. -->
 
 ## Mission Detail
 <!-- What this repo is for, beyond the template's generic mission. -->

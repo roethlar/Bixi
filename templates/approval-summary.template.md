@@ -31,11 +31,10 @@ verification, and future agent behavior aligned.>
 
 ## Verification Default
 
-<State this run's verification concretely: the automated command(s) run and their result,
-or — for a docs-only change exempt under the verification default (see the AGENTS
-Verification section) — that it was exempt and why. Give the applied outcome for this run,
-not a copy of the generic rule's conditions; do not ask the human to approve this normal
-default.>
+<State the verification commands run and their results. For a docs-only
+change exempt from the full suite, state why and report `git diff --check`.
+Name checks not run. Report evidence, not a generic policy or an approval
+question.>
 
 ## Assumptions
 
@@ -76,7 +75,9 @@ known blanket harness-dir ignore itself; anything else it flags. Write
 important, raise the ignore rule as a question instead; never plan a silent
 `git add -f`.>
 
-<State the exact commit message that will be used. Approving this summary
+<Name the task branch and intended integration branch for an existing
+repo; initial repository creation establishes main. State the exact commit
+message that will be used. Approving this summary
 authorizes copying the judgment drafts, running the refresh install, and
 making ONE scoped commit covering both groups (exactly the lists above,
 never `git add -A`, never `git add -f`). Nothing is pushed yet; the push
@@ -92,7 +93,9 @@ summary.>
 
 ## Push Policy
 
-Push policy will be set to: **4 — ask** (default).
+<Name and preserve the existing owner-approved push policy unless a change
+was requested. If none exists, present **4 — ask** as the default and ask
+for the owner's choice.>
 
 To change it, reply with a number when you approve:
 
@@ -101,7 +104,8 @@ To change it, reply with a number when you approve:
   3 — docs: Push automatically after docs/state-only commits; ask for code or tool changes.
   4 — ask: Always ask before pushing. (default)
 
-<Do NOT pre-select or infer the option from prior decisions, context, or the decisions log. Write the default (4) here and wait for the owner's answer at approval time. The owner's reply to the approval question is the only valid source for this choice.>
+<Prior explicit approval remains valid. Ask only for an unresolved choice;
+do not infer new push authority from approval of unrelated work.>
 
 ## Risks, Limitations, Or Open Questions
 

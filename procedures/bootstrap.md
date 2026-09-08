@@ -1,9 +1,10 @@
 # Governance Bootstrap Procedure
 
 You are an agent in a target repo. The owner started you with a one-line
-prompt pointing at this file. Follow it top to bottom. The single approval
-gate is the approval summary near the end — do not pause to ask the owner to
-approve each step. Before that gate, nothing tracked in the TARGET
+prompt pointing at this file. Follow it top to bottom. The approval summary
+authorizes the named installation steps; do not ask again for steps it
+covers. Git initialization and hook trust retain their explicit boundaries.
+Before installation approval, nothing tracked in the TARGET
 repository changes — no tracked files, index entries, commits, remotes, or
 settings; the one sanctioned pre-approval write inside the target is the
 self-ignored `.bootstrap-tmp/` scratch directory that holds Step 4's drafts,
@@ -165,9 +166,9 @@ intact.
    inside migrated content — module names, paths, commands — against current
    repo evidence before writing it: migrate the rule, not its stale
    examples, and flag anything unverifiable. A fresh authoritative file that
-   launders stale facts is worse than the old file it replaced. It extends
-   `AGENTS.md` and never overrides it — a genuine conflict is a defect to
-   flag.
+   launders stale facts is worse than the old file it replaced. Apply
+   `AGENTS.md`'s specific-rule precedence; flag any contradiction that
+   cannot be reconciled.
 2. `.agents/state.md` from its template — current truth only: what is true
    now, active work, blockers, next action. No historical narrative; honor
    the template's write rules (volatile facts stamped `as of <commit>`,
@@ -176,8 +177,8 @@ intact.
 3. `.agents/decisions.md` from its template — settled decisions, generalized
    to make sense without chat context, citing superseded docs.
 4. `.agents/push-policy.md` from `templates/push-policy.template.md`
-   (default `ask`). The approval summary asks the owner to choose; never
-   pre-fill the choice from context.
+   (default `ask` when no policy is established). Preserve an existing
+   owner-approved policy. Ask only for a missing choice or a requested change.
 5. Only if this repo's governance contains rules earned from real, citable
    incidents that other repos would benefit from: draft the harvest note for
    the feedback step (Step 8) — expected outcome is NO report, hard cap of
@@ -210,15 +211,19 @@ Write `.bootstrap-tmp/drafts/approval-summary.md` from
 picture: the judgment drafts (with custody proven by `git check-ignore` on
 each final path — a gitignored path goes in Local-only or raises the ignore
 rule as a question, never a silent `git add -f`), the shipped set from the
-plan record, the push-policy and owner-communication questions, the
+plan record, any unresolved push-policy choice, the
 inventory and fresh-eyes results for migrations, and the exact commit
 message. Present it and wait.
 
 ## Step 7: After approval — install and commit
 
-Two routes. The approval summary must have announced which route applies
-and its exact commit message(s); the owner's approval covers exactly that
-shape and nothing else.
+Two routes. The summary names the route, exact commit message(s), task
+branch, and intended main (the integration branch defined by the git
+playbook). For an existing repo, create or reuse the approved work branch
+before installation; follow the git playbook's branch setup. A newly
+initialized repo establishes main with its first commit. If branch setup
+changes the HEAD pinned by the refresh plan, regenerate and re-present the
+plan before applying it. Approval covers exactly the announced scope.
 
 **Standard route** — no legacy core governance file is being superseded:
 
@@ -259,19 +264,19 @@ commits, both announced with exact messages in the approval summary:
    1 moves the target HEAD, so a pre-approval plan record cannot pin this
    commit — on this route the two announced commit messages in the approval
    summary are the binding record. Surface every FLAG line to the owner.
-   Nothing lands between the two commits, and nothing after them without a
-   fresh owner go; the never-amend rule above applies to both.
+   Nothing lands between the two commits. The never-amend rule applies
+   to both; subsequent closeout follows its separately named authority.
 
 Both routes, then:
 
-4. Consult `.agents/push-policy.md`: `always` ⇒ push immediately naming the
-   remote; `operators` ⇒ push if this commit is operator-invoked; otherwise
-   ask once, in one line, naming the remotes when there are several, and
-   push only what the owner names.
-5. **Hook trust.** The shipped `.claude/settings.json` carries the
-   compaction re-ground hook; if the harness gates hooks on workspace trust,
-   say what the hook does and run the trust step only on an explicit go,
-   only for the harness you are in. Never write to a `~/`-level trust store
+4. Push per `.agents/push-policy.md`, reusing explicit push authority
+   already given. An installation commit is not task completion: verify
+   the result and follow the git playbook through merge and local/remote
+   work-branch deletion. Report pending steps until closeout is satisfied.
+5. **Hook trust.** The shipped hook configs carry compaction re-grounding
+   and/or protection against editing installed governance. If the current
+   harness gates them on trust, explain those hooks and run the trust step
+   only on an explicit go, only for the harness you are in. Never write to a `~/`-level trust store
    automatically; never run another harness's trust command.
 
 ## Step 8: Feedback and close

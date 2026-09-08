@@ -64,8 +64,11 @@ Read <path-to-bixi>/procedures/bootstrap.md and follow it.
 The agent discovers the repo live, inventories any governance it already has
 (migrate, supersede, or leave — each with a reason), drafts the repo-specific
 files in a scratch directory, and shows you one plain-English approval
-summary. Nothing changes until you approve; on approval everything lands as
-one commit.
+summary. Tracked installation changes wait for approval and use the
+announced scoped commit(s).
+Implementation is complete only after verification, integration into the
+primary branch, and deletion of its work branch locally and remotely.
+Pending approval or cleanup stays visible.
 
 ## Keep a repo current
 

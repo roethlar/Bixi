@@ -45,7 +45,8 @@ correctness.
 
    "Using only the files in this repo, answer: (1) What is this project?
    (2) What is true right now - active work, blockers? (3) What should
-   happen next? (4) How are code changes verified before completion?
+   happen next? (4) What verification, merge and branch-deletion evidence is required
+   before implementation is complete?
    (5) Which file would you update at the end of a work session, and how
    would you record a new durable decision? (6) For every claim in the
    guidance files about CI, deployment, or another external system, name the

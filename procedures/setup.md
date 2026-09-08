@@ -2,7 +2,7 @@
 
 You were launched in a brand-new repo by `tools/new-project.py`. The shipped
 governance set is already installed and **staged, uncommitted**. You own the
-judgment files, three setup questions, and the first commit. This is the
+judgment files, two setup questions, and the first commit. This is the
 greenfield path — for a repo with existing governance to migrate, use
 `procedures/bootstrap.md` instead.
 
@@ -55,6 +55,9 @@ owner's choice.
 
 ## Step 4 — One scoped commit
 
+This first commit establishes the repo's integration branch. Subsequent
+implementation uses work branches and the git playbook's closeout.
+
 Commit the staged shipped set **plus** the four judgment drafts as ONE
 scoped commit: `git add` exactly those paths (never `git add -A`, never
 `git add -f`). Suggested message: "new-project: governance install +
@@ -64,7 +67,7 @@ repo may have none; offer to add one, do not configure one unasked).
 
 ## Step 5 — Report
 
-Close in plain English, bottom line first: the project is set up and
-working; what you asked and what the owner chose; the first next thing to
-build (from Step 1); and that `toolkit` lists what the owner can say in
+Verify the installation with `git diff --check`, then report that initial
+setup is finished; what the owner chose; the first next thing to build
+(from Step 1); and that `toolkit` lists what the owner can say in
 this repo.

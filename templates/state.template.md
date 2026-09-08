@@ -1,36 +1,30 @@
 # Agent State
 
-This file is the first place future agents should read for current repo state.
-Keep it short: `## Now` holds only live entries; the `catchup` hygiene
-sweep rotates landed or superseded entries verbatim to
-`docs/history/state-archive.md` (create it on first use) — never summarize
-them away, never let them pile up here. `handoff` is the fast snapshot and
-rotates nothing. Write-time rules: volatile facts
-(CI state, counts) carry `as of <commit>`; push status is never recorded
-here — git owns it, and unpushed work is mentioned in the moment it
-matters, never written down; a count or enumeration another file owns is
-pointed to, never copied; machine-specific
-facts (local toolchains, host layout, per-clone posture) go to the tracked
-`.agents/machines.md`, keyed by machine and dated — never here.
+Keep only live work here; archive historical entries verbatim under
+`docs/history/state-archive.md`. The `catchup` sweep performs hygiene;
+`handoff` only snapshots. Use canonical pointers instead of copied counts.
+Stamp volatile facts `as of <commit>`. Check push status live in git,
+never store it here. Put machine facts in `.agents/machines.md`, keyed
+by machine and dated.
 
 ## Now
 
-- <Current active work, if any.>
+- <Task, work branch, verified head, and stage: in progress / verified /
+  awaiting merge / awaiting deletion. Completion follows the git playbook;
+  do not archive work with pending integration or cleanup.>
 
 ## Next
 
-- <The next useful action or "None recorded".>
+- <Next useful action or "None recorded".>
 
 ## Blockers
 
-- <Open blockers or "None recorded". The `catchup` sweep re-verifies each
-  parked item's recorded basis; a falsified basis moves here with the new
-  evidence.>
+- <Live blockers or "None recorded"; cite evidence for changed assumptions.>
 
 ## Verification
 
-- See `.agents/repo-guidance.md` (Verification) — the canonical home for the
-  verification command. Record here only a deviation active right now.
+- See `.agents/repo-guidance.md` (Verification). Record only a currently
+  active deviation here.
 
 ## Active Sources
 
@@ -40,5 +34,4 @@ facts (local toolchains, host layout, per-clone posture) go to the tracked
 
 ## Unrecorded Repo Memory
 
-- <Important facts, decisions, invariants, verification rules, non-goals, or open
-  questions that still need a durable home, or "None known".>
+- <Durable facts or questions still needing a home, or "None known".>
