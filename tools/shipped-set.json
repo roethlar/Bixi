@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "comment": "The toolkit's shipped artifact set. tools/refresh.py reconciles a governed repo to exactly this set; installed governance is toolkit-owned (owner ruling 2026-07-16), so divergence is always drift and every run converges the repo. Classes: replace-whole (AGENTS.md: current or formerly-shipped versions update normally; divergent content is restored to current when git history shows a committed version once matched a shipped hash, and flagged as a foreign governance file - bootstrap, not refresh - when none ever did); replace (missing = install; matches a formerly-shipped version = update to current; anything else = drift, reported with its introducing commits and restored to current); retired (formerly-shipped target paths removed; drifted content is removed with a report - git history preserves it, and the dirty-tree refusal keeps uncommitted content from being machine-destroyed). The separate seeded[] section is not a class of the shipped set: those are bootstrap-seeded repo-owned policy files that installed artifacts reference unconditionally, so refresh installs one that is absent (backfilling a repo governed before the file existed) and otherwise ignores it entirely - no hash comparison, no formerly[], no update, no drift, no removal. All matching is newline-equivalent sha256: CRLF -> LF, and content differing only by at most one trailing final newline matches (issue #1). formerly[] lists normalized hashes of every version ever shipped, from git history. Before committing source changes, run tools/record-history.py to append outgoing normalized hashes automatically; this keeps deployed versions recognizable as updates.",
+ "comment": "The toolkit's shipped artifact set. tools/refresh.py reconciles a governed repo to exactly this set; installed governance is toolkit-owned (owner ruling 2026-07-16), so divergence is always drift and every run converges the repo. Classes: replace-whole (AGENTS.md: current or formerly-shipped versions update normally; divergent content is restored to current when git history shows a committed version once matched a shipped hash, and flagged as a foreign governance file - bootstrap, not refresh - when none ever did); replace (missing = install; matches a formerly-shipped version = update to current; anything else = drift, reported with its introducing commits and restored to current); retired (formerly-shipped target paths removed; drifted content is removed with a report - git history preserves it, and the dirty-tree refusal keeps uncommitted content from being machine-destroyed). The separate seeded[] section is not a class of the shipped set: those are bootstrap-seeded repo-owned policy files that installed artifacts reference unconditionally, so refresh installs one that is absent (backfilling a repo governed before the file existed) and otherwise ignores it entirely - no hash comparison, no formerly[], no update, no drift, no removal. All matching is newline-equivalent sha256: CRLF -> LF, and content differing only by at most one trailing final newline matches (issue #1). formerly[] lists normalized hashes of every version ever shipped, from git history. MAINTENANCE RULE: whenever a shipped source file changes, append the OUTGOING version's normalized hash to its formerly[] in the same commit - otherwise deployed copies of that version get reported as drift and restored instead of cleanly updated.",
  "artifacts": [
   {
    "source": "templates/AGENTS.template.md",
@@ -80,7 +80,8 @@
     "77cf4183173969d809f4d1b52e7518d6950eca2b7b4cc056ed259a985f420c7b",
     "ab4d9c5e51f92047be2a0b76fd2eb1588e6d0ba63cd7dcdd53a5f2a1f7028acc",
     "09f4ec93e839d9ef3ccb690c3f4b269fe8c44edb7b9974ad354f62820de0ace4",
-    "858deb3f79eca8354ea480ff5de032df6ae07339bb3a3e52597b5128b5df29be"
+    "858deb3f79eca8354ea480ff5de032df6ae07339bb3a3e52597b5128b5df29be",
+    "bde5dc07567c2da07eb0f35e6352f2363a0f4a375a5485b4cf09376f0f9752c3"
    ]
   },
   {
@@ -90,7 +91,8 @@
    "formerly": [
     "918b1c90559355ef78f33fdf3562f2b021ef8bdfd8a5c8415e5decd44934de55",
     "04214ad4d1c9fda3e2c11b4fd0fae6f059c302751a11956f818d199e910999f3",
-    "8bea8752e596fec22c25e27d81748e8a307a7544f99c01d006274c3dfd013f8a"
+    "8bea8752e596fec22c25e27d81748e8a307a7544f99c01d006274c3dfd013f8a",
+    "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
    ]
   },
   {
@@ -103,7 +105,8 @@
     "148147a1d45ed405977f6a732feec9db25d29a3ba02d77f3320094b66807b944",
     "0fba0611bebd4594bd35bb498217ef281bb07a17c508216698734b922bce486a",
     "34d26a0d87aa991eb5409ea4e09b44af2d6eb3b7170ae18d7dfedd23af692447",
-    "44c023ca082b698ed6f3b6bdfebc6cadca7eb8f93bbe231b8a7d70388ef49ca3"
+    "44c023ca082b698ed6f3b6bdfebc6cadca7eb8f93bbe231b8a7d70388ef49ca3",
+    "59e6eda581aa6260b788f6aa3a4a12c22cc42249dfd253d34327d9f4d924433a"
    ]
   },
   {
@@ -114,7 +117,8 @@
     "c6d68a38c857890e2fd313dc0448bba0d894f7c39a3cea5a557c424d4da49105",
     "390d7b6f04dcfdfa1e65396593d51ad71b7916b057e367cc737adae2820f7037",
     "37fe3331e68348ab7e7083aaf881948d22e29c242f6d54861072ceed0acc879e",
-    "8ad8ccab487eafc8641da595b45ebe56fa61c7dff2e2b3bbb5459a2c0b014236"
+    "8ad8ccab487eafc8641da595b45ebe56fa61c7dff2e2b3bbb5459a2c0b014236",
+    "9b58149ab03dd7643f3726be51d01ffec54945cf3b79ecb4bb1f3e1418d26ecf"
    ]
   },
   {
@@ -127,7 +131,8 @@
     "2ef227ad54fe3fed28aefcd7e36fcc20513621b2f21019f4d6c9b22c7e8b979b",
     "bb50e867ce09240528fdc56e917704172aa869fec7bc3bb539b6e4c0d659a654",
     "c3fe27daabad3d584579a695f6959c042929b3dba006eef0de7a3b70349cda91",
-    "6d068f392b3ce42bcbb064e54283aa793482cdaf01f1c05260207fb46144d01a"
+    "6d068f392b3ce42bcbb064e54283aa793482cdaf01f1c05260207fb46144d01a",
+    "b59308f4408246212c2edbeaf235e675a3196673bfe1b832c5bb7a07325b5908"
    ]
   },
   {
@@ -140,7 +145,8 @@
     "60e4eb1a918f0715f9cd28d7b5ef83afc6f29f5e8fbd17790635a90ddf752adb",
     "2778f09f9c198e8fa75c7a4f46ec855cf53f9d230401f554fe34242db76d5670",
     "64a2ca4fb74676678a50e5bdad0605bd42be457d540eb6d38ecc9bdc223a3572",
-    "d7687ab804ff8f4297a6e351a795d3ccc458831577d5e4873db64d9c1d2c5f66"
+    "d7687ab804ff8f4297a6e351a795d3ccc458831577d5e4873db64d9c1d2c5f66",
+    "0e38145a4e07f8e1bf6bca7f1fcd6b933895a54ecd26afc797bfdaef4ec6c2d7"
    ]
   },
   {
@@ -151,7 +157,8 @@
     "68bc100abb6836af03bf4fd57ee07a639c3b30b1284e044ae6e66c180a7dc774",
     "1f74a6293729eae11ebb40f3905135b9b1d41c45f922be5565a653ee39e14992",
     "c65c7494f16a5c06a51497347460a28262ac9947bed8cf683a96f1da24775d14",
-    "5aa94bba47cf0a0c92be6f4eb9db651059f17e476e71c569dc5f0107d26740d1"
+    "5aa94bba47cf0a0c92be6f4eb9db651059f17e476e71c569dc5f0107d26740d1",
+    "7510ac9317b573a387b70badf691cb376b5536f73940f98d6a23d0d1960b30f6"
    ]
   },
   {
@@ -168,7 +175,8 @@
     "de464cf1b61ec803049b1d5a586ce4a655631b2f65b79c8c3239a4206fb9dc46",
     "40cbfe960d7fbf31dbdfd2e7e9fb665dca12a6991dfbaf9ca618785a17a8f99b",
     "1daffe8577cf9d86a5b7f12674a44deec0d4c4190e1d581c1378c064b38248c7",
-    "5db04a46151169aedc4b016640e0fef2651d2ac52caf99bdca2d1a1df5d45097"
+    "5db04a46151169aedc4b016640e0fef2651d2ac52caf99bdca2d1a1df5d45097",
+    "1eddc52f579e55948a9c6852e9df5d1ab8e10286fe92dc77deb3a031a0c80efb"
    ]
   },
   {
@@ -198,7 +206,8 @@
     "c6964920fd0047a5ef9e64d011775d49cdebe79e0f588798e73a974d5e871d47",
     "525ad51a64f274a5b7669515a5c50e3a28e61db14d2073d94d19e77e0e02c987",
     "4c91791af2ed87c60a613c1fd53bb11df2faab3076428016a0d6c2ca4bd3803a",
-    "4a55da506a3d3419148ad50119a6f161dce08e66e554e103322547987523bd92"
+    "4a55da506a3d3419148ad50119a6f161dce08e66e554e103322547987523bd92",
+    "3e1f661dcd3a945b88d8f9ba9ce0c127ea56527252829fddba7408790e32e372"
    ]
   },
   {
@@ -219,7 +228,8 @@
     "118efb8ef8849ba9dbee3f4f19f0ba48ee7e93aa97882b1b6e4d2a884a5917aa",
     "c4684c51e9e3f1473d973ebf31b62e0ada276781b77423c6b26e95cccbf71813",
     "1e6872808be8d807fc4992a344f494402f02b289646b17585e7d8931748a15b5",
-    "ba40fe0c973999c173b1fa4391fdb69cf8985240210821a7dfb015298ccfad11"
+    "ba40fe0c973999c173b1fa4391fdb69cf8985240210821a7dfb015298ccfad11",
+    "2c623ab6315845358175597d00a62a5786c58c0cf41512413e8dbd312f276455"
    ]
   },
   {
@@ -232,7 +242,8 @@
     "142447790247de19447360673e672f1b60d1a199d267401d340b60c2dc063ddf",
     "d096be8385dab83f4bb181b315705726541232c2ede19b14a9aaff36e006e1e7",
     "c8cad64f4b1f54ae75861c98138ab14fd4344217b2818ce1fa796ce0403abcd3",
-    "c9edfa8f6cb5a8701884ae52e8f587e0c9f7c0e022f8ee9d3e8d19c39999ce50"
+    "c9edfa8f6cb5a8701884ae52e8f587e0c9f7c0e022f8ee9d3e8d19c39999ce50",
+    "8b723dd24ee4f80f8764c33f6f4d6dc6f8aed7f165971a8ac97368ae5ff9784a"
    ]
   },
   {
@@ -244,7 +255,8 @@
     "6cd56df652df06350d2768b1e9c064adf3f9118dfffde0327658dee6b1c50594",
     "69c4b07f2de36114f46864f39d3e2d2b581bc5f8323d54003eb1d389ec30e6a5",
     "e2c1333c0ae5711c4bf3da42757c7b446995d3887896d9003fb9a00e54aac122",
-    "be70960d349cb288cecc13529a4d61db32d7b699c65ae4ef4f95a5f409680681"
+    "be70960d349cb288cecc13529a4d61db32d7b699c65ae4ef4f95a5f409680681",
+    "dc2765668954e7cfb7167a1e318560cfbc5236267fe8f832ab789bae7631a5b1"
    ]
   },
   {
@@ -257,7 +269,8 @@
     "c5efbcb3921b8e24117d7577b816e53344b19e1f8c10c819546f3a344544022c",
     "e0cabe214c887a83617b08e0764067fed8576c865a7aa93c1630d1c7b17c8e38",
     "48f7825dbd23719008fca5b15aff7162242488fb3a804a71a630923e4f270d6a",
-    "a78aec6a0d7eb6a5be88244b1cf7d4d39e58b91eb879ab3e074602f00402f82a"
+    "a78aec6a0d7eb6a5be88244b1cf7d4d39e58b91eb879ab3e074602f00402f82a",
+    "8b4a8a1343840b27f07e99793ee9b1e760a91df46b382ce9304689843ea200fd"
    ]
   },
   {
@@ -268,7 +281,8 @@
     "28658ded7a970cb76b05ae0d9d7e2f274a578992e91e4a482a5c423364fbd469",
     "8c77c719e1fc61989a93f73b38231ed1784848ddd7478a60b755f64cbd7b8878",
     "97bc576603d34ba34ad26f1e8294a8627b106645d04ad583ea5aab0a993fed8c",
-    "bf295cc5f196eab590f5d787b6067e9fc66fa855ea760f9f293965b1e79e3897"
+    "bf295cc5f196eab590f5d787b6067e9fc66fa855ea760f9f293965b1e79e3897",
+    "ee2a130344521f08522eacff3f999ad30c332a8ac5bad895127808fe2ff87bdf"
    ]
   },
   {
@@ -281,7 +295,8 @@
     "215233e02c685385f6b66c6ed840d706156eac0b12eb3b9755d783378261332d",
     "9c87208157a25dff51b2b5cea603fefe8a99b69ca6c6c4705eed55e56f4fa4bb",
     "211a8f23ebe1de52b5f8daa8114c5865af582b9f9c12b514870dd0af6b024372",
-    "cbd74a1afeb016072695cb5f98c881820387f1e389f4bb35407a2c044674599f"
+    "cbd74a1afeb016072695cb5f98c881820387f1e389f4bb35407a2c044674599f",
+    "5617728e892ea7177a0382672ec499d46956339fd57ed8027093569a21805f4b"
    ]
   },
   {
@@ -292,7 +307,8 @@
     "89f16d93a44c6f961309b4de0338638d5a2758c9459dad911da20b608276d233",
     "64791b170d5b8b47514aa789e4330207e953d5693ed3c1e5d0f8502382c20dbf",
     "52cf4b2c711bccac5d5218557fe2026d06344ae419f8b990acc8f2a91e3a64f4",
-    "718bfd6f81ec9d1d4455cbcf1a79a8d055014519fecc39b3e8425f74c2246424"
+    "718bfd6f81ec9d1d4455cbcf1a79a8d055014519fecc39b3e8425f74c2246424",
+    "9d371336b821f0e744cdfa3ec7c9d91a46e38aecf3ef8bc5db6c5d648dbc3024"
    ]
   },
   {
@@ -305,7 +321,8 @@
     "69db84a8f5b7ba0a1d013d9e8b02ff352465cf87eadb4970bb8168d97b23f2fc",
     "164e7a1030f3097c29f6ddd64c5c8487558ad8aab715bd002bdfa1e2bf0bd4c6",
     "bc3a782b0622e3fcf9720c29c178ee2eed984fdb25598ddb3103263c5bd3853f",
-    "2300eec9e6adf9fd7b78d6d3a7774dbd7f8b41a1ff8ac2e423faf8e7a830f229"
+    "2300eec9e6adf9fd7b78d6d3a7774dbd7f8b41a1ff8ac2e423faf8e7a830f229",
+    "637ff95a74a3da69ab17ede50a0c3ff03154fd1b6bf574c54d951ab06790980b"
    ]
   },
   {
@@ -319,7 +336,8 @@
     "05a164927b963e18babfa8a157e2530612f0fafb210dc232158534184685893f",
     "2cadd689d4b9ae8621c5b7a5eec85fe447ceb6e5eaaaad53061480ea5ae7280a",
     "f90bff9d0f40a59e60b4021113493ac5a373040b38684684132c4a9c40ac9207",
-    "d8b6ff3651cdebf4576d107abb1b2b27dbe13fdb92da4067431f28286c1d2540"
+    "d8b6ff3651cdebf4576d107abb1b2b27dbe13fdb92da4067431f28286c1d2540",
+    "7b83e474a3e5648e415d38114ee9382dfb4b04c2a2195f3e9c1dcd16dd03b26f"
    ]
   },
   {
@@ -333,7 +351,8 @@
     "9e7ea59783b90a98f0f5bccc2add8921639a3fba57ed1a07b54262cc4f698b46",
     "76134deadd0b2fdb0ffed19a78fa42c492487ce1c6d3a371f54a2c6141e85c19",
     "e20b0ce53be97642b590e0a6c014026d05b4d3749175d33824dd5f91ff3293f8",
-    "1eda71e7b3f686ffd06512d7487913c19c3494d20515cdd6bfa850bcc7fef48a"
+    "1eda71e7b3f686ffd06512d7487913c19c3494d20515cdd6bfa850bcc7fef48a",
+    "96c328bfb6ebb26e5257ff4ba33122d5ef4012bee3cc3cc755d5e2aa1ab5f40b"
    ]
   },
   {
@@ -345,7 +364,8 @@
     "8296e97b95ee4759035b53e4a6497117ff1240b5a6ea9a6c048dda8689f1b01f",
     "625b8f5c1da93384a7cbb9fcdd9e218d4d67440edcfb7f599a7fd7d2b530a67e",
     "ffab3d6256cbec8d59cf206bec8b60c7038ece139ea5e05056cb7afe3d9cff9b",
-    "a52c96dd2f7ac0329a596b2361ba08768d6cedae1f638e0c0744c20d04811be2"
+    "a52c96dd2f7ac0329a596b2361ba08768d6cedae1f638e0c0744c20d04811be2",
+    "361db971002ab3ccfa47ed9761912b1b295a52899fbde5b675e86a3de0bb64e2"
    ]
   },
   {
@@ -355,7 +375,8 @@
    "formerly": [
     "15351ce8e677fed6121b5d486e9f72e15973a28c89f7d7b4403187bebc45b3b8",
     "cd655396c5c07eda461f2414bef658d431ca7efc6b0a0a25c098ea403daadadf",
-    "917b2195ddbad0b69404ad384423a28e9e5a6f54920e81833ff61abb37b2dd16"
+    "917b2195ddbad0b69404ad384423a28e9e5a6f54920e81833ff61abb37b2dd16",
+    "49b0e8c68ae5cca66b1e80e211383b744064e74c755589a0315ee81733dcd467"
    ]
   },
   {
@@ -369,7 +390,8 @@
     "8fdd5c4748e29b58e6587639eedc8d368eca972a0235e5460e1fb62825e106e4",
     "ff05496b4cf9e6820411b7fd84a21383220eeac4d558ceb5592c57e7355c269a",
     "721fcffb4004686756f45ce3c75840df011f9ac981594c650ae8eed4a475698e",
-    "2609eaf22e88df42d6f6ddf09a817da68bb2493291e50f548cbc138b67605bc4"
+    "2609eaf22e88df42d6f6ddf09a817da68bb2493291e50f548cbc138b67605bc4",
+    "f14655cf8b635ef7e135391509e548d3e387dce272f6017a6a5970e8dbbf8172"
    ]
   },
   {
@@ -383,7 +405,8 @@
     "8fa703ac3e42fa13cd9a22c3eae50eadf0087f157e6f73d66c057919ca9955ae",
     "d40b3ce429661d0841e7c6a8b169a15d5691097be16e4d4d46af1d380a259488",
     "2a19ec324f0862d891f67590f8d881634ccff385cdb9cf5d956f86572cfb6123",
-    "ab78c19d3d917be56e1b4b747bda012b6e09cb94390a3e4cd44372c4a588e85f"
+    "ab78c19d3d917be56e1b4b747bda012b6e09cb94390a3e4cd44372c4a588e85f",
+    "dc2f2080b1a8f8280b743e9114e22074c71f3b8198f6c2651dcb9de220552f73"
    ]
   },
   {
@@ -395,7 +418,8 @@
     "6e1ccefe83ce68f803224120e1839cfb404918eb29bb6f30c6920ae59488e00e",
     "140bcb0330eb2411c5bd9e5cce85c490ff1570d411aa5797744514b940883988",
     "4560ed377123cb2111d865300643a8eb84e2185ffb3408dcc27d6a22106d0a7c",
-    "c7d3eb05e379566fa5ae8947ab5ce79059cf49a8647ccb7e329ebcd7525b114b"
+    "c7d3eb05e379566fa5ae8947ab5ce79059cf49a8647ccb7e329ebcd7525b114b",
+    "9b72d87aee3c28076603d70ec0707b9600cb9ca788f5a0fc1674d2b4d858c333"
    ]
   },
   {
@@ -405,7 +429,8 @@
    "formerly": [
     "152efb879d443b45d86b7c7c1fed640990d289f57e2fca374dc87b8185e72232",
     "dd474a77c98b29b67bd8cd0f77cb2886436628db02ad4ded21a9b57fa09e5bc0",
-    "4f467ed6df17d01363af0146d06ca97b75efc19672cbbfdf228c6b201fbbfae1"
+    "4f467ed6df17d01363af0146d06ca97b75efc19672cbbfdf228c6b201fbbfae1",
+    "1e4415c5363817b794c4364c6e716043ff6f84369a3291b3275acb5426b4011a"
    ]
   },
   {
@@ -426,7 +451,8 @@
     "2f108f66dd5ffb308b770aaa87f330c6a842eeacb260bb33e54d5ffce65e91b1",
     "3542533a8369eef08e871344559ec615939fdc6c751cdeb482dcbe1ed84480a7",
     "3fef328c17547fe5786ca9310aa16db15bfff3db7a51954cc94d3e8d4b4489be",
-    "380d6a8bad751a3364de128d16d7232cd6b08f338e2fc61ca2bfc94e3362a339"
+    "380d6a8bad751a3364de128d16d7232cd6b08f338e2fc61ca2bfc94e3362a339",
+    "5bf289a6d4c8bd27ee5a981899be3822131ae5d704982b1c581504372008157d"
    ]
   },
   {
@@ -439,7 +465,8 @@
     "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
     "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c",
     "12fc40e88ca0ff90eace2025cc80e430711caa32923984d4232ba03ffc7e5528",
-    "16b158136a444804cae19ea454fc39c3372c2ae2b85402ea9f6cd3291fe68f41"
+    "16b158136a444804cae19ea454fc39c3372c2ae2b85402ea9f6cd3291fe68f41",
+    "a6c79ef3dfa3fdf23806ef443c1a076764f26347bded7c276e6b9e5b0fb5a2e0"
    ]
   },
   {
@@ -448,7 +475,8 @@
    "class": "replace",
    "formerly": [
     "75a36fbf3f2523d697cf5d7260075058c140e82f7ed9f39f749213f6d5cf3028",
-    "28ba1d10d6090437197cd3f2dc8cd7663278ae1045daddfe20c2942736de9bd3"
+    "28ba1d10d6090437197cd3f2dc8cd7663278ae1045daddfe20c2942736de9bd3",
+    "5df54c2a25ec85c2b642e4a2e52b8e8c096c96801dcef202e389108d2a3fd9f2"
    ]
   },
   {
@@ -456,7 +484,8 @@
    "target": ".agents/playbooks/handoff.md",
    "class": "replace",
    "formerly": [
-    "4f263c56c425cb846803c7a3bcc4cc2fb2bd39068341758ed19d30e60b8d118e"
+    "4f263c56c425cb846803c7a3bcc4cc2fb2bd39068341758ed19d30e60b8d118e",
+    "47c630819f06d6ec8b42af7ec8bb9f64d9526c616cb30f509e925bf4f6f0218b"
    ]
   },
   {
@@ -465,7 +494,8 @@
    "class": "replace",
    "formerly": [
     "af885ab545c95e4f1d6f287b4c8ba92dcee5a3ff5259370dbba97630c9f0d759",
-    "19540ac901ef01d25b968afd973fa0092fcd3e0ddbe03db1303ed75690df3f62"
+    "19540ac901ef01d25b968afd973fa0092fcd3e0ddbe03db1303ed75690df3f62",
+    "f95e7dc0d5aa8088382904aef41d131f8156a1e8d24b495debcd8de864300127"
    ]
   },
   {
@@ -475,7 +505,8 @@
    "formerly": [
     "ba1bd341b5cce37deea67abb90e0b9142371fc03f96a8455fc89cf78d2b754b1",
     "bd43b24bd1c3434b1eaa6c8aa9a6f70c50872f9fd1b7e128a051954ac057557d",
-    "d248d375e5dfbe5e62f32dae17f2992f1fee4d4fffe84301a8daf6e4cd579575"
+    "d248d375e5dfbe5e62f32dae17f2992f1fee4d4fffe84301a8daf6e4cd579575",
+    "4e3fd0f64c3cb70acfe41e56e859bad4592a10f36ec2ada1be817e73fd562cee"
    ]
   },
   {
@@ -485,7 +516,8 @@
    "formerly": [
     "ce026f9cc71ab0208afbec1b414b184c5836fc43b2cfcf0363633e49682b4789",
     "b1bc7f82c39a272f9207336e52691f7a46943dd8598c19956b0ccc120c4fa461",
-    "e638215d9ee4047ea9e65fb2dddeaacb5ef98af94d42c274a0c4a021a5fec7e2"
+    "e638215d9ee4047ea9e65fb2dddeaacb5ef98af94d42c274a0c4a021a5fec7e2",
+    "6030fdaeb86a5993af459ecd1fdefb9f4c031ba1098bd096e2b7f21fa0b4282a"
    ]
   },
   {
@@ -496,7 +528,8 @@
     "4173da747a86d191c119d5da7283a11b5aa5b317486a0067e0eef08134fd8d76",
     "9895cbd9520b5a5989628c2d0eb3a74fd0bdfb99137da434843a2d93cc0bbf0e",
     "53e7ea1debc550f31b312d67d81dbcfb4e62c5b7915202aad061317839770f84",
-    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c"
+    "f2fae64cf284776af135405c048a2925256c70e899f6048fb44d855979d3183c",
+    "877cf400c784124e80ea93b489bb4a184d6b13e6b82f3bfc59d5b12046f20546"
    ]
   },
   {
@@ -506,21 +539,25 @@
    "formerly": [
     "a196a3f47a76700ce6d58b2cd53c89d90a00d08cc104e20094be236f3c96f08f",
     "1079aab51e1807b606bfdf05232450a7b9d0be001ee99260bbd82d2107d95000",
-    "bbcc4b57817f39dc63d40bb7aac2e4ec0a3cbdef9fcc26f2b677112b6798e4dc"
+    "bbcc4b57817f39dc63d40bb7aac2e4ec0a3cbdef9fcc26f2b677112b6798e4dc",
+    "a3ea750e02c4a72deb61d88a581cd03d9e9420a9c601babc04421bc9632f1609"
    ]
   },
   {
    "source": "templates/playbooks/toolkit.md",
    "target": ".agents/playbooks/toolkit.md",
    "class": "replace",
-   "formerly": []
+   "formerly": [
+    "fb5231c9403d16730d0bbf6767adeccb189ddb8927c1b71f143cf6120a221bcf"
+   ]
   },
   {
    "source": "templates/playbooks/update-governance.md",
    "target": ".agents/playbooks/update-governance.md",
    "class": "replace",
    "formerly": [
-    "0436ac7304bc35d5ec05a28d17bf8294d8afcb6c5b8d8d0a70cf1e20f9f934f3"
+    "0436ac7304bc35d5ec05a28d17bf8294d8afcb6c5b8d8d0a70cf1e20f9f934f3",
+    "1635c535656c6e1c6978c736e33eb7df3339306a582449b7b10d5549fc63a4f0"
    ]
   }
  ],

@@ -1,5 +1,5 @@
 ---
-description: Save current state when the owner says handoff or requests a session handover.
+description: Fast save-my-place snapshot of .agents/state.md so the next session resumes without chat context. Use when the owner says handoff or a session is wrapping up.
 # toolkit-owned; edits are drift — see AGENTS.md
 ---
 

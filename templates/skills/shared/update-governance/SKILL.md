@@ -1,6 +1,6 @@
 ---
 name: update-governance
-description: Refresh from Bixi when the owner requests a governance update.
+description: Refresh this repo's governance from the governance toolkit (Bixi). Use when the owner asks to update or refresh governance.
 # toolkit-owned; edits are drift — see AGENTS.md
 ---
 

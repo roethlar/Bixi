@@ -2,7 +2,7 @@
 
 # Playbook: delegated git operations (`git`)
 
-Use the repo's current guidance and push policy. Explain what happens to the
+Read the repo's AGENTS.md and push policy. Explain what happens to the
 owner's work in plain English; do not ask them to choose git mechanics.
 
 ## Delegation contract
@@ -34,11 +34,11 @@ the branch closeout below applies when a work branch exists.
 
 Branch work proceeds through **in progress → verified → awaiting merge →
 awaiting deletion → complete**. A review verdict or scoped operator can
-finish while the underlying work remains pending. Keep closeout pending in the existing task record; link from state when
-needed. Update it when the stage changes, without creating duplicate trackers.
+finish while the underlying work remains pending. Keep its state entry,
+plan and tracker open until closeout; update records as each step lands.
 
 1. Verify the work and finish its records on the work branch. Record the
-   verified head and the intended main. Present any missing merge
+   reviewed/tested head and the intended main. Present any missing merge
    or deletion authorization as a concrete proposal.
 2. With merge authority, refresh main, inspect intervening changes, and
    integrate the work without rewriting existing commits. Resolve conflicts

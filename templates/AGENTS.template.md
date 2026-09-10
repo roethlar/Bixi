@@ -2,59 +2,58 @@
 
 ## Prime Invariants
 
-- Answer briefly; act only on an explicit go for its named scope. A plan, report, or spec alone is not a go.
-- Code changes need an approved approach; a short proposal suffices. Write a plan document only when requested.
+- Answer first; act only on an explicit go for its named scope. Plans, reports and specs aren't a go.
+- Code changes require an approved plan. Non-shipped bookkeeping doesn't; if unsure, treat it as code.
 - Commit slices with records. Branch work is incomplete until merged into main and its branch deleted. Push policy: `.agents/push-policy.md`.
-- Repo files are durable memory. Restore missing context before judgment degrades; hand off when needed.
+- Only repo files are durable memory. Re-read this file under context pressure; hand off before judgment degrades.
 
 ## Repo-Specific Guidance
 
 @.agents/repo-guidance.md
 
-The more specific rule wins. Flag a contradiction you cannot reconcile.
+More specific rules win. Flag a contradiction you cannot reconcile.
 
 ## Invariants
 
-- Record durable facts, decisions and open questions once in `.agents/`, understandable without chat; label assumptions. Use pointers over copies.
-- `.agents/state.md` is the current-state entry point, kept current by the working agent as work lands.
-- Reuse valid evidence, reads and results. Extra tool/model calls must resolve material uncertainty; formatting never justifies a model retry. Delegate only when authorized and useful.
-- Never bypass a failed check, guard, ignore rule or refusal without proving it is not load-bearing. Otherwise stop or ask.
-- After 2–3 attempts without verifiable progress, report the obstacle and next action.
-- Keep this file portable; repo-specific rules live in `.agents/`. Refresh-governed artifacts are toolkit-owned. Route changes to toolkit sources; exclude installed copies from repo edits/lint. Seeded policy files (`.agents/push-policy.md`) are repo-owned and editable.
+- Record durable facts, decisions and open questions in `.agents/`, understandable without chat; label unverified inferences as assumptions.
+- One canonical location per truth; pointers over copies. `.agents/state.md` is the sole current-state entry point, kept current by the working agent as work lands.
+- Never bypass failed checks, guards, ignore rules or refusals unless proven not load-bearing. Otherwise stop or ask.
+- Escalate for stalled progress, never duration: after 2–3 attempts without verifiable progress, report the obstacle and proposed next action.
+- Keep this file portable; repo-specific rules live in `.agents/`. Refresh-governed artifacts are toolkit-owned. Edit toolkit sources, never installed copies. Exclude installed copies from repo lint/format; refresh restores divergence. Seeded policies (`.agents/push-policy.md`) are repo-owned and editable.
 
 ## Session Startup
 
-Load this file, `.agents/repo-guidance.md` and `.agents/state.md` only where missing or stale in context. Before trusting recorded state, compare local refs with `git ls-remote`; reuse a current check and caveat unreachable remotes. Hook trust needs an explanation and explicit authority.
+Before changes, read this file, `.agents/repo-guidance.md` and `.agents/state.md`. Before trusting state, compare the local ref with `git ls-remote`; if unreachable, proceed with a caveat. Hook trust needs an explanation and explicit go.
 
 ## Source of Truth
 
-Human request → this file and repo guidance → state, decisions and approved playbooks → code/tests/CI evidence → other docs. Fix the lower source on disagreement, or ask. Read archives only for relevant historical evidence.
+Human request → this file and repo guidance → state, decisions and approved playbooks → code/tests/CI evidence → other docs. Fix the lower source on disagreement, or ask.
 
 ## Operator Requests
 
-Read the requested `.agents/playbooks/<name>.md` if not already current in context; report if missing.
+Read `.agents/playbooks/<name>.md` on invocation.
 
-- `catchup` — re-ground, tidy relevant records and report.
-- `handoff` — save current state.
-- `decision` — record a settled decision and update affected guidance.
+- `catchup` — re-ground and report; no other work until the owner responds.
+- `handoff` — fast state snapshot.
+- `decision` — record a settled decision in `.agents/decisions.md`; update affected guidance.
 - `plan` — draft or update a durable plan.
-- `playbook <name>` — run it.
-- `toolkit` — list owner verbs.
+- `playbook <name>` — run it; report if missing.
+- `toolkit` — list owner verbs, one plain line each.
 
 ## Owner Gates
 
-Ask only for an unsettled decision, with context, consequence and recommendation. Existing approval stands within scope; silence authorizes nothing.
+Ask one unsettled decision: context, action, consequence, recommendation. Approval stands within scope; silence authorizes nothing.
 
 ## Verification
 
 Self-review is forbidden unless explicitly requested by the owner.
 
-Run required repo verification; docs-only changes need `git diff --check` unless they affect behavior. A new regression guard must detect the failure and pass with the fix; reuse that proof on unchanged code. Report material checks not run.
+Before claiming completion, run repo guidance's verification entry point; docs-only changes need `git diff --check` unless they affect behavior. Prove new tests bite: revert the fix, watch it fail, restore. State checks not run.
 
 ## Git Safety
 
-Merges, deletion, history rewrites and outward-facing actions require explicit authority; reuse it once given. One finding per commit. Verify content reached main with `git diff` before deleting its work branch. Setup/closeout: `.agents/playbooks/git.md`.
+Merges, deletion, history rewrites (amend, rebase, squash, force-push) and outward-facing actions each need explicit authority. One finding per commit. Before branch deletion, verify content reached main with `git diff`; ancestry alone is insufficient. Setup/closeout: `.agents/playbooks/git.md`.
 
 ## Final Response
 
-Lead with the result. Name remaining work and its next action; never report incomplete work as done.
+Lead with results. Name remaining work's pending step and one proposed action; never call incomplete work done.

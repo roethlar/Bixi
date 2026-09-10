@@ -56,8 +56,17 @@ def offer_launch(candidates, prompt: str, target: Path,
 
 
 def print_launch_lines(candidates, prompt: str, target: Path, toolkit: Path) -> None:
-    """Give the existing caller one continuation prompt."""
-    print("  Continue setup in the current agent: " + prompt)
+    """Non-interactive fallback: never prompt, never hang — print the exact
+    ready-to-paste launch command per detected harness (or the procedure
+    path when nothing is installed)."""
+    if not candidates:
+        print("  no known harness CLI found on PATH; finish setup by pointing")
+        print("  any agent at the procedure:")
+        print("  {}".format(toolkit / "procedures" / "setup.md"))
+        return
+    print("  to finish setup, launch one of these in {}:".format(target))
+    for _name, shape in candidates:
+        print("    " + render_cmd(launch_argv(shape, prompt)))
 
 
 def main(argv=None) -> int:
@@ -102,10 +111,8 @@ def main(argv=None) -> int:
     print("  governance set installed and staged (uncommitted).")
 
     prompt = kickoff_prompt(toolkit, target, hint)
-    candidates = []
-    if sys.stdin.isatty() and sys.stdout.isatty():
-        candidates = detect_harnesses(target=target)
-    if candidates:
+    candidates = detect_harnesses(target=target)
+    if sys.stdin.isatty() and sys.stdout.isatty() and candidates:
         code = offer_launch(candidates, prompt, target)
         if code is not None:
             return code
