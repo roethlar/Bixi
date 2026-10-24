@@ -43,11 +43,12 @@ The canonical public home of this toolkit is Bixi
 own `origin` first: a product clone from Bixi, the development clone from
 the development repo
 (`https://github.com/roethlar/AgentGovernanceBootstrap.git`), whose
-owner-controlled LAN gitea mirror
-(`http://q:3000/michael/AgentGovernanceBootstrap.git`) is a trusted fetch
-source covering GitHub being unreachable. The mirror may lag; lag is
-expected, never a conflict. Canon propagates only via pushes to the
-clone's GitHub home.
+owner-controlled LAN gitea pull mirror
+(`http://magneto:3001/michael/AgentGovernanceBootstrap.git`) is a trusted
+fetch source covering GitHub being unreachable. It pulls from the
+development repo on GitHub, so it may lag; lag is expected, never a
+conflict, and it is never pushed to. Canon propagates only via pushes to
+the clone's GitHub home.
 
 Sync the local toolkit clone (the directory containing this `procedures/`
 folder; normally `~/dev/Bixi`) before anything else. Run

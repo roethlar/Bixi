@@ -85,12 +85,13 @@ CANONICAL_URLS = [
     # Order matters: the clone's own origin is tried first (a product clone
     # syncs from its product home, the dev clone from its home); the public
     # product repo is the canonical fallback, then the dev remote and the
-    # LAN gitea mirror. (Mirror-first would fast-forward to a lagging mirror
-    # head and silently run a stale toolkit.) Offline -> proceed on the
-    # local copy with a flag.
+    # LAN gitea pull mirror of the dev remote (on magneto; the former q:3000
+    # mirror is retired). (Mirror-first would fast-forward to a lagging
+    # mirror head and silently run a stale toolkit.) Offline -> proceed on
+    # the local copy with a flag.
     "https://github.com/roethlar/Bixi.git",
     "https://github.com/roethlar/AgentGovernanceBootstrap.git",
-    "http://q:3000/michael/AgentGovernanceBootstrap.git",
+    "http://magneto:3001/michael/AgentGovernanceBootstrap.git",
 ]
 
 
